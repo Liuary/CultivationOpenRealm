@@ -1,0 +1,42 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "CORUI",
+	"Description": "CultivationOpenRealm UI Manager",
+	"Category": "Other",
+	"CreatedBy": "Liuary",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Dependencies": [
+		{
+			"Name": "Puerts"
+		},
+		{
+			"Name": "JsEnv"
+		}
+	],
+	"Modules": [
+		{
+			"Name": "CORUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "JsEnvManager",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "PuertsMixinGenerator",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
+		}
+	]
+}

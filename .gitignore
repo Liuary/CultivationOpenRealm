@@ -1,0 +1,59 @@
+# Unreal生成文件
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+*.sln
+*.suo
+
+# IDE配置
+.vs/
+.vscode/
+.idea/
+*.code-workspace
+*.iml
+
+# Rider自动生成文件
+.idea/workspace.xml
+.idea/modules.xml
+
+# 其他
+*.log
+*.opendb
+
+# IDE专属插件 - 不提交
+Plugins/Developer/**
+
+# 引擎自带插件 - 绝对不提交
+Engine/Plugins/**
+
+# 市场插件缓存 - 不提交
+Plugins/*/Intermediate/
+Plugins/*/Binaries/
+Plugins/*/Saved/
+
+.vsconfig
+*.DotSettings.user
+*.user
+
+# 第三方预编译库 - 不提交
+*.lib
+*.dll
+*.dylib
+*.a
+*.pdb
+*.exe
+
+# Puerts第三方库 - 只保留头文件，排除二进制
+Plugins/Puerts/ThirdParty/v8_*/Bin/
+Plugins/Puerts/ThirdParty/v8_*/Lib/
+Plugins/Puerts/ThirdParty/Library/
+
+# .NET编译产物
+Plugins/Puerts/Source/*/obj/
+
+# 忽略生成的js文件夹
+Content/JavaScript
+# 只忽略这个文件夹下的.js文件
+Content/JavaScript/**/*.js

@@ -1,0 +1,11 @@
+# Unreal核心二进制文件
+*.uasset filter=lfs diff=lfs merge=lfs -text
+*.umap filter=lfs diff=lfs merge=lfs -text
+# 源代码（多IDE共享）
+Source/​**​/*.cpp text
+Source/​**​/*.h text
+Source/​**​/*.cs text
+# 配置文件
+Config/*.ini text
+*.csv text
+*.json text
