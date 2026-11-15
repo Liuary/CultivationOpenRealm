@@ -1,0 +1,189 @@
+{
+  "version": "v1.5.0",
+  "stages": {
+    "v1.5.0-stage-03": {
+      "name": "v1.5.0-stage-03",
+      "phase": "done",
+      "status": "done",
+      "deps": [],
+      "ops": {},
+      "workflow_mode": "fast",
+      "requirements": [
+        {
+          "id": "REQ-005",
+          "order": 0
+        },
+        {
+          "id": "REQ-006",
+          "order": 1
+        }
+      ],
+      "stats": {
+        "start_time": "2026-11-01T14:36:23.388Z",
+        "end_time": "2026-11-06T12:58:54.142Z",
+        "duration_ms": 426150754
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "manual",
+        "by": "feel",
+        "at": "2026-11-06T12:58:47.843Z",
+        "note": "历史遗留阶段收口：对应需求已完成，归档前补齐阶段验证证据。",
+        "evidence": "REQ-005（UI_GameStart 类型修复）与 REQ-006（UE5.8 MCP 启用）均已 review/verify pass；release-check v1.5.0 无未完成需求"
+      }
+    }
+  },
+  "reviews": [],
+  "log": [
+    {
+      "time": "2026-11-01T14:36:18.372Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:23.383Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:0bc00ca7"
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:28.131Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:3a972730"
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:29.182Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:1bc32994"
+      }
+    },
+    {
+      "time": "2026-11-06T12:58:24.136Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "exec_running",
+        "to": "review_pending",
+        "session_id": "proc:aad27fc8"
+      }
+    },
+    {
+      "time": "2026-11-06T12:58:30.127Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "review_pending",
+        "to": "review_passed",
+        "session_id": "proc:0445141b"
+      }
+    },
+    {
+      "time": "2026-11-06T12:58:37.042Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "review_passed",
+        "to": "archiving",
+        "session_id": "proc:1146c35a"
+      }
+    },
+    {
+      "time": "2026-11-06T12:58:54.137Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "archiving",
+        "to": "done",
+        "session_id": "proc:f4f94ee8"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-005",
+      "title": "允许 UI_GameStart 的 ImgPathList/TextList 为 null（保持原语义）",
+      "status": "done",
+      "created_at": "2026-11-01T14:36:14.753Z",
+      "updated_at": "2026-11-01T14:37:00.964Z",
+      "target_version": "v1.5.0",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-005.md",
+      "review": {
+        "result": "pass",
+        "by": "feel",
+        "at": "2026-11-01T14:37:00.054Z",
+        "note": "self-review：字段改为 string[] | null，保留 null 初始化；Start 用局部变量收窄并保留 shift 空值保护。",
+        "independent": false
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "test",
+        "by": "feel",
+        "at": "2026-11-01T14:37:00.490Z",
+        "note": "tsc 正常配置 0 错误；strictNullChecks 下 UI_GameStart 无报错；tsc -p tsconfig.json 成功生成 JS。",
+        "evidence": "D:\\Downloads\\tscheck\\node_modules\\typescript\\bin\\tsc --noEmit -p tsconfig.json; --strictNullChecks --skipLibCheck; tsc -p tsconfig.json"
+      }
+    },
+    {
+      "id": "REQ-006",
+      "title": "启用 UE 5.8 内置 Unreal MCP 与客户端配置",
+      "status": "done",
+      "created_at": "2026-11-03T15:25:01.673Z",
+      "updated_at": "2026-11-03T15:33:29.283Z",
+      "target_version": "v1.5.0",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-006.md",
+      "owner": "Liuary",
+      "claimed_at": "2026-11-03T15:25:17.621Z",
+      "review": {
+        "result": "pass",
+        "by": "feel",
+        "at": "2026-11-03T15:33:07.080Z",
+        "note": "self-review：启用 ModelContextProtocol/AllToolsets/Terminal；写入自动启动配置与 .mcp.json/.vscode/mcp.json；安装并启用 Blender MCP addon。",
+        "independent": false
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "manual",
+        "by": "feel",
+        "at": "2026-11-03T15:33:09.072Z",
+        "note": "Unreal MCP 自动启动已验证；Blender MCP 需 GUI 启动 Blender 后才监听 9876。",
+        "evidence": "UE5.8 editor launch -> TCP 127.0.0.1:8000 open, LogModelContextProtocol emitted; Blender addon installed/enabled (blender -b cannot host server by design)."
+      }
+    }
+  ],
+  "counts": {
+    "stages": 1,
+    "reviews": 0,
+    "log": 8,
+    "requirements": 2
+  },
+  "schemaVersion": 1,
+  "archived_at": "2026-11-06T12:59:10.786Z"
+}

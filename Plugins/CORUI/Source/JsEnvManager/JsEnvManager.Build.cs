@@ -39,7 +39,7 @@ public class JsEnvManager : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore", "CORUI",
+				"SlateCore", "Settings", "CORUI",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -1,6 +1,6 @@
 /*
  * Tencent is pleased to support the open source community by making Puerts available.
- * Copyright (C) 2020 THL A29 Limited, a Tencent company.  All rights reserved.
+ * Copyright (C) 2020 Tencent.  All rights reserved.
  * Puerts is licensed under the BSD 3-Clause License, except for the third-party components listed in the file 'LICENSE' which may
  * be subject to their corresponding license terms. This file is subject to the terms and conditions defined in file 'LICENSE',
  * which is part of this source code package.
@@ -123,7 +123,7 @@ void FScriptArrayWrapper::Set(const v8::FunctionCallbackInfo<v8::Value>& Info)
         return;
     }
     uint8* DataPtr = GetData(Self, GetSizeWithAlignment(Inner->Property), Index);
-    Inner->Property->InitializeValue(DataPtr);
+    // Inner->Property->InitializeValue(DataPtr);
     Inner->JsToUE(Isolate, Context, Info[1], DataPtr, false);
 }
 
@@ -795,7 +795,11 @@ void FFixSizeArrayWrapper::InternalGet(const v8::FunctionCallbackInfo<v8::Value>
         return;
     }
 
+#if ENGINE_MINOR_VERSION >= 5 && ENGINE_MAJOR_VERSION >= 5
+    auto Ptr = Self + Property->GetElementSize() * Index;
+#else
     auto Ptr = Self + Property->ElementSize * Index;
+#endif
 
     auto Ret = Inner->UEToJs(Isolate, Context, Ptr, PassByPointer);
     if (Inner->NeedLinkOuter && PassByPointer)
@@ -843,7 +847,11 @@ void FFixSizeArrayWrapper::Set(const v8::FunctionCallbackInfo<v8::Value>& Info)
         return;
     }
 
+#if ENGINE_MINOR_VERSION >= 5 && ENGINE_MAJOR_VERSION >= 5
+    auto Ptr = Self + Property->GetElementSize() * Index;
+#else
     auto Ptr = Self + Property->ElementSize * Index;
+#endif
 
     Inner->JsToUE(Isolate, Context, Info[1], Ptr, true);
 }

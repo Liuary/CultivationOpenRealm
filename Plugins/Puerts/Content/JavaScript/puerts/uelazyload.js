@@ -1,6 +1,6 @@
 /*
 * Tencent is pleased to support the open source community by making Puerts available.
-* Copyright (C) 2020 THL A29 Limited, a Tencent company.  All rights reserved.
+* Copyright (C) 2020 Tencent.  All rights reserved.
 * Puerts is licensed under the BSD 3-Clause License, except for the third-party components listed in the file 'LICENSE' which may be subject to their corresponding license terms.
 * This file is subject to the terms and conditions defined in file 'LICENSE', which is part of this source code package.
 */
@@ -38,7 +38,67 @@ var global = global || (function () { return this; }());
         Object.setPrototypeOf(cls_proxy, Object.getPrototypeOf(cls));
         Object.setPrototypeOf(cls, cls_proxy);
     }
-    
+
+    let cls_proxy = null;
+	
+    function interceptClassProto(cls) {
+        if (cls == null) {
+            return;
+        }
+
+        let cls_self = cls;
+        let cls_proto = cls_self != null ? Object.getPrototypeOf(cls_self) : null;
+        let cls_proto_proto = cls_proto != null ? Object.getPrototypeOf(cls_proto) : null;
+        while (cls_proto_proto != null) {
+            cls_self = cls_proto;
+            cls_proto = cls_proto_proto;
+            cls_proto_proto = Object.getPrototypeOf(cls_proto);
+        }
+
+        if (cls_proxy == null) {
+            cls_proxy = new Proxy(cls_proto ? cls_proto : {}, {
+                get : function(target, name, receiver) {
+                    if (receiver && typeof name === 'string' && name !== '0') {
+                        const fname = getFNameString(name);
+                        let obj_cls = Object.getPrototypeOf(receiver);
+                        while (obj_cls != null) {
+                            const p = Object.getOwnPropertyDescriptor(obj_cls, fname);
+                            if (p) {
+                                Object.defineProperty(obj_cls, name, p);
+                                if (p.get)
+                                    return p.get.call(receiver);
+                            }
+                            obj_cls = Object.getPrototypeOf(obj_cls);
+                        }
+                    }
+                    return Reflect.get(target, name, receiver);
+                },
+                set : function(target, name, newValue, receiver) {
+                    if (receiver && typeof name === 'string' && name !== '0') {
+                        const fname = getFNameString(name);
+                        let obj_cls = Object.getPrototypeOf(receiver);
+                        while (obj_cls != null && obj_cls != cls_proxy) {
+                            const p = Object.getOwnPropertyDescriptor(obj_cls, fname);
+                            if (p) {
+                                Object.defineProperty(obj_cls, name, p);
+                                if (p.set) {
+                                    p.set.call(receiver, newValue);
+                                    return true;
+                                }
+                            }
+                            obj_cls = Object.getPrototypeOf(obj_cls);
+                        }
+                    }
+                    return Reflect.set(target, name, newValue, receiver);
+                }
+            });
+        }
+
+        if (cls_proto != cls_proxy) {
+            Object.setPrototypeOf(cls_self, cls_proxy);
+        }
+    }
+
     let UE = Object.create(null);
     let UE_proxy = new Proxy(UE, {
         get : function(UE, name)
@@ -46,6 +106,9 @@ var global = global || (function () { return this; }());
             let cls = loadUEType(name);
             rawSet(UE, name, cls);
             interceptClass(cls);
+            if (isQuickJS()) {
+                interceptClassProto(cls.prototype);
+            }
             return cls;
         }
     });
@@ -136,6 +199,9 @@ var global = global || (function () { return this; }());
     
     rawSet(UE, 'NewStruct', global.__tgjsNewStruct);
     global.__tgjsNewStruct = undefined;
+    
+    rawSet(UE, 'MakeWeakObjectPtr', global.__tgjsMakeWeakObjectPtr);
+    global.__tgjsMakeWeakObjectPtr = undefined;
     
     puerts.$ref = ref;
     puerts.$unref = unref;
@@ -302,7 +368,7 @@ var global = global || (function () { return this; }());
     
     function translateType(t) {
         if (typeof t !== 'number') {
-            if (Object.hasOwn(t, '__puerts_ufield')) {
+            if (Object.prototype.hasOwnProperty.call(t, '__puerts_ufield')) {
                 return t.__puerts_ufield
             } else {
                 return t.StaticClass();

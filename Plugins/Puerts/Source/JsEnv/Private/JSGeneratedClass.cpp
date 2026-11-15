@@ -1,6 +1,6 @@
 /*
  * Tencent is pleased to support the open source community by making Puerts available.
- * Copyright (C) 2020 THL A29 Limited, a Tencent company.  All rights reserved.
+ * Copyright (C) 2020 Tencent.  All rights reserved.
  * Puerts is licensed under the BSD 3-Clause License, except for the third-party components listed in the file 'LICENSE' which may
  * be subject to their corresponding license terms. This file is subject to the terms and conditions defined in file 'LICENSE',
  * which is part of this source code package.
@@ -10,8 +10,15 @@
 #include "Engine/Blueprint.h"
 #include "JSGeneratedFunction.h"
 #include "JSWidgetGeneratedClass.h"
-#include "JSAnimGeneratedClass.h"
 #include "JSLogger.h"
+
+// UE 5.8 deprecates REN_ForceNoResetLoaders: UObject::Rename no longer calls ResetLoaders, so the flag has no effect
+// there. Earlier engines keep it, where Rename would otherwise reset the package loaders.
+#if ENGINE_MAJOR_VERSION > 5 || (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 8)
+#define PUERTS_RENAME_FLAGS (REN_DontCreateRedirectors | REN_DoNotDirty)
+#else
+#define PUERTS_RENAME_FLAGS (REN_DontCreateRedirectors | REN_DoNotDirty | REN_ForceNoResetLoaders)
+#endif
 
 #define OLD_METHOD_PREFIX "__puerts_old__"
 #define MIXIN_METHOD_SUFFIX "__puerts_mixin__"
@@ -32,18 +39,6 @@ UClass* UJSGeneratedClass::Create(const FString& Name, UClass* Parent,
         JSGeneratedClass->Constructor = v8::UniquePersistent<v8::Function>(Isolate, Constructor);
         JSGeneratedClass->Prototype = v8::UniquePersistent<v8::Object>(Isolate, Prototype);
         JSGeneratedClass->ClassConstructor = &UJSWidgetGeneratedClass::StaticConstructor;
-        Class = JSGeneratedClass;
-    }
-    else if (Cast<UAnimBlueprintGeneratedClass>(Parent))
-    {
-        auto JSGeneratedClass = NewObject<UJSAnimGeneratedClass>(Outer, *Name, RF_Public);
-#ifdef THREAD_SAFE
-        JSGeneratedClass->Isolate = Isolate;
-#endif
-        JSGeneratedClass->DynamicInvoker = DynamicInvoker;
-        JSGeneratedClass->Constructor = v8::UniquePersistent<v8::Function>(Isolate, Constructor);
-        JSGeneratedClass->Prototype = v8::UniquePersistent<v8::Object>(Isolate, Prototype);
-        JSGeneratedClass->ClassConstructor = &UJSAnimGeneratedClass::StaticConstructor;
         Class = JSGeneratedClass;
     }
     else
@@ -114,8 +109,7 @@ void UJSGeneratedClass::Override(v8::Isolate* Isolate, UClass* Class, UFunction*
         }
         // UE_LOG(LogTemp, Error, TEXT("replace %s of %s"), *Super->GetName(), *Class->GetName());
         //同一Outer下的同名对象只能有一个...
-        Super->Rename(*FString::Printf(TEXT("%s%s"), TEXT(OLD_METHOD_PREFIX), *Super->GetName()), Class,
-            REN_DontCreateRedirectors | REN_DoNotDirty | REN_ForceNoResetLoaders);
+        Super->Rename(*FString::Printf(TEXT("%s%s"), TEXT(OLD_METHOD_PREFIX), *Super->GetName()), Class, PUERTS_RENAME_FLAGS);
         Class->AddFunctionToFunctionMap(Super, Super->GetFName());
         // UE_LOG(LogTemp, Error, TEXT("rename to %s"), *Super->GetName());
     }
@@ -186,6 +180,7 @@ void UJSGeneratedClass::Override(v8::Isolate* Isolate, UClass* Class, UFunction*
     if (Class->HasAnyInternalFlags(EInternalObjectFlags::RootSet) || GUObjectArray.IsDisregardForGC(Class))
     {
         Function->AddToRoot();
+        Super->AddToRoot();
     }
 }
 
@@ -204,6 +199,8 @@ UFunction* UJSGeneratedClass::Mixin(v8::Isolate* Isolate, UClass* Class, UFuncti
         Class->AddFunctionToFunctionMap(Tmp, Tmp->GetFName());
         Tmp->SetFlags(Tmp->GetFlags() | RF_Transient);
         Super = Tmp;
+        Super->ClearInternalFlags(EInternalObjectFlags::Native);
+        Super->StaticLink(true);
     }
     auto MaybeJSFunction = Cast<UJSGeneratedFunction>(Super);
     if (!MaybeJSFunction)
@@ -257,6 +254,7 @@ UFunction* UJSGeneratedClass::Mixin(v8::Isolate* Isolate, UClass* Class, UFuncti
     if (Class->HasAnyInternalFlags(EInternalObjectFlags::RootSet) || GUObjectArray.IsDisregardForGC(Class))
     {
         Function->AddToRoot();
+        Super->AddToRoot();
     }
 
     Function->Original = Super;
@@ -286,7 +284,9 @@ void UJSGeneratedClass::Restore(UClass* Class)
     OrphanedClass->ClassGeneratedBy = Class->ClassGeneratedBy;
 #endif
 
-#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION > 2
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 7
+    TObjectPtr<UField>* PP = &Class->Children;
+#elif ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION > 2
     UField** PP = nullptr;
     UField* ChildrenPtr = Class->Children.Get();
     PP = &ChildrenPtr;
@@ -314,7 +314,7 @@ void UJSGeneratedClass::Restore(UClass* Class)
             JGF->JsFunction.Reset();
 
             *PP = JGF->Next;
-#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION > 2
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION > 2 && ENGINE_MINOR_VERSION < 7
             if (PP == &ChildrenPtr)
             {
                 Class->Children = ChildrenPtr;
@@ -326,7 +326,7 @@ void UJSGeneratedClass::Restore(UClass* Class)
             {
                 JGF->RemoveFromRoot();
             }
-            JGF->Rename(nullptr, OrphanedClass, REN_DontCreateRedirectors | REN_DoNotDirty | REN_ForceNoResetLoaders);
+            JGF->Rename(nullptr, OrphanedClass, PUERTS_RENAME_FLAGS);
             FLinkerLoad::InvalidateExport(JGF);
         }
         else
@@ -334,7 +334,7 @@ void UJSGeneratedClass::Restore(UClass* Class)
             PP = &(*PP)->Next;
         }
     }
-#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION > 2
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION > 2 && ENGINE_MINOR_VERSION < 7
     PP = &ChildrenPtr;
 #else
     PP = &Class->Children;
@@ -346,8 +346,7 @@ void UJSGeneratedClass::Restore(UClass* Class)
             if (Function->GetName().StartsWith(TEXT(OLD_METHOD_PREFIX)))
             {
                 Class->RemoveFunctionFromFunctionMap(Function);
-                Function->Rename(*Function->GetName().Mid(strlen(OLD_METHOD_PREFIX)), Class,
-                    REN_DontCreateRedirectors | REN_DoNotDirty | REN_ForceNoResetLoaders);
+                Function->Rename(*Function->GetName().Mid(strlen(OLD_METHOD_PREFIX)), Class, PUERTS_RENAME_FLAGS);
                 Class->AddFunctionToFunctionMap(Function, Function->GetFName());
             }
         }
@@ -388,3 +387,5 @@ void UJSGeneratedClass::Release()
     Constructor.Reset();
     Prototype.Reset();
 }
+
+#undef PUERTS_RENAME_FLAGS

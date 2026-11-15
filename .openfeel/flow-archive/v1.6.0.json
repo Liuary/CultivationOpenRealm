@@ -1,0 +1,331 @@
+{
+  "version": "v1.6.0",
+  "stages": {
+    "v1.6.0-stage-04": {
+      "name": "v1.6.0-stage-04",
+      "phase": "done",
+      "status": "done",
+      "deps": [],
+      "ops": {
+        "op-001": {
+          "title": "观澜套件：10 窗资产 + TS + 自检",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-001"
+        },
+        "op-002": {
+          "title": "视觉反馈整改：常规文案 + 霞鹜文楷 + 加粗按钮边框",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-002"
+        },
+        "op-003": {
+          "title": "修复 PmgDesignerExtension 生命周期崩溃（委托 UAF + 延迟 lambda 悬空 designer）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-003"
+        }
+      },
+      "workflow_mode": "fast",
+      "requirements": [
+        {
+          "id": "REQ-007",
+          "order": 0
+        },
+        {
+          "id": "REQ-008",
+          "order": 1
+        }
+      ],
+      "stats": {
+        "start_time": "2026-11-03T16:06:16.042Z",
+        "end_time": "2026-11-05T14:25:11.013Z",
+        "duration_ms": 166734971
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "manual",
+        "by": "Feel",
+        "at": "2026-11-05T14:25:03.639Z",
+        "note": "观澜套件 + 视觉整改 + 两处插件崩溃修复均完成；tsc 0、PIE 逐窗截图、自检 9/9、崩溃复现路径 7 次开关无新增崩溃。",
+        "evidence": "docs/design/ui-test-suite.md; docs/design/screenshots/; docs/design/crash-2026-11-04.md; Build.bat 成功; 自检 [TestSelfCheck] 9/9"
+      }
+    }
+  },
+  "reviews": [
+    {
+      "id": "REV-001",
+      "op": "v1.6.0-stage-04",
+      "stage": "v1.6.0-stage-04",
+      "status": "closed",
+      "priority": "medium",
+      "title": "self-review：观澜套件 9/9 PASS、tsc 0 错误；已知限制为 Toast 重叠与资产名后缀",
+      "filed_by": "cli",
+      "filed_at": "2026-11-03T16:52:51.617Z",
+      "canAutoFix": false,
+      "blocking": false
+    },
+    {
+      "id": "REV-002",
+      "op": "v1.6.0-stage-04",
+      "stage": "v1.6.0-stage-04",
+      "status": "closed",
+      "priority": "medium",
+      "title": "self-review：文案/字体/边框整改 + PmgDesignerExtension 两处崩溃修复，均已验证",
+      "filed_by": "cli",
+      "filed_at": "2026-11-05T14:17:16.990Z",
+      "canAutoFix": false,
+      "blocking": false
+    }
+  ],
+  "log": [
+    {
+      "time": "2026-11-03T15:49:45.730Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-11-03T16:06:16.036Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:baab67ae"
+      }
+    },
+    {
+      "time": "2026-11-03T16:06:22.306Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:9b400fd0"
+      }
+    },
+    {
+      "time": "2026-11-03T16:06:26.993Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:d584408b"
+      }
+    },
+    {
+      "time": "2026-11-03T16:18:56.390Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "opId": "op-001"
+      }
+    },
+    {
+      "time": "2026-11-03T16:53:00.626Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "exec_running",
+        "to": "review_pending",
+        "session_id": "proc:a078e1be"
+      }
+    },
+    {
+      "time": "2026-11-03T16:53:09.699Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "review_pending",
+        "to": "review_passed",
+        "session_id": "proc:bf9a5269"
+      }
+    },
+    {
+      "time": "2026-11-04T15:22:17.152Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "review_passed",
+        "to": "exec_running",
+        "session_id": "proc:ec510a0d"
+      }
+    },
+    {
+      "time": "2026-11-05T14:15:57.162Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "opId": "op-002"
+      }
+    },
+    {
+      "time": "2026-11-05T14:16:09.786Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "opId": "op-003"
+      }
+    },
+    {
+      "time": "2026-11-05T14:17:29.811Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "exec_running",
+        "to": "review_pending",
+        "session_id": "proc:31a8cfe2"
+      }
+    },
+    {
+      "time": "2026-11-05T14:17:38.937Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "review_pending",
+        "to": "review_passed",
+        "session_id": "proc:a929549f"
+      }
+    },
+    {
+      "time": "2026-11-05T14:24:57.008Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "review_passed",
+        "to": "archiving",
+        "session_id": "proc:acbd4bf4"
+      }
+    },
+    {
+      "time": "2026-11-05T14:25:11.007Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.0-stage-04",
+        "from": "archiving",
+        "to": "done",
+        "session_id": "proc:4e54c966"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-007",
+      "title": "《观澜》CORUI 测试套件：系列 UI 窗口、TS Mixin 与自检",
+      "status": "done",
+      "created_at": "2026-11-03T15:49:48.418Z",
+      "updated_at": "2026-11-05T14:24:37.245Z",
+      "target_version": "v1.6.0",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-007.md",
+      "owner": "Liuary",
+      "claimed_at": "2026-11-03T15:49:52.309Z",
+      "review": {
+        "result": "pass",
+        "by": "Feel",
+        "at": "2026-11-05T14:16:49.527Z",
+        "note": "自审：设计/资产/TS/自检 9/9；后续文案改普通术语、恢复霞鹜文楷、按钮描边加粗，逐窗截图复核，逻辑未改。",
+        "independent": false
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "manual",
+        "by": "Feel",
+        "at": "2026-11-05T14:16:55.619Z",
+        "note": "tsc 0 错误；10 个 WBP 编译保存；PIE 逐窗截图按新文案更新；自检 9/9（文案/字体/边框整改不涉及逻辑）。",
+        "evidence": "docs/design/ui-test-suite.md; docs/design/screenshots/; 自检日志 [TestSelfCheck] PASS 9/9"
+      }
+    },
+    {
+      "id": "REQ-008",
+      "title": "修复 PuertsMixinGenerator DesignerExtension 两处生命周期崩溃",
+      "status": "done",
+      "created_at": "2026-11-05T14:16:21.263Z",
+      "updated_at": "2026-11-05T14:24:50.309Z",
+      "target_version": "v1.6.0",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-008.md",
+      "owner": "Liuary",
+      "claimed_at": "2026-11-05T14:16:28.096Z",
+      "review": {
+        "result": "pass",
+        "by": "Feel",
+        "at": "2026-11-05T14:17:01.450Z",
+        "note": "自审：OnAssetClosed 委托在 Uninitialize/析构注销；Initialize 延迟 lambda 改为 LifeToken + 弱 designer/blueprint 守卫，两处生命周期路径均已封住。",
+        "independent": false
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "build",
+        "by": "Feel",
+        "at": "2026-11-05T14:17:08.479Z",
+        "note": "插件重编译成功；两次修复后共 7 次打开/关闭 WBP 编辑器（含 0.3s 快速关闭 + 15s 空闲）无新增崩溃。",
+        "evidence": "docs/design/crash-2026-11-04.md; Saved/Crashes/UECC-Windows-6E21.../; Saved/Crashes/UECC-Windows-2AE10.../; Build.bat CultivationOpenRealmEditor 成功"
+      }
+    }
+  ],
+  "counts": {
+    "stages": 1,
+    "reviews": 2,
+    "log": 14,
+    "requirements": 2
+  },
+  "schemaVersion": 1,
+  "archived_at": "2026-11-05T14:25:45.049Z"
+}

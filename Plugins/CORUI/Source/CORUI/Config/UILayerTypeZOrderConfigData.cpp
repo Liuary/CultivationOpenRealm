@@ -1,8 +1,9 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UILayerTypeZOrderConfigData.h"
 
+#if WITH_EDITOR
 void UUILayerTypeZOrderConfigData::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -30,3 +31,4 @@ void UUILayerTypeZOrderConfigData::PostEditChangeProperty(FPropertyChangedEvent&
 	}
 	
 }
+#endif

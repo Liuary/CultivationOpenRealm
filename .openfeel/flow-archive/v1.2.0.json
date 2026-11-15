@@ -1,0 +1,128 @@
+{
+  "version": "v1.2.0",
+  "stages": {
+    "v1.2.0-stage-01": {
+      "name": "v1.2.0-stage-01",
+      "phase": "done",
+      "status": "done",
+      "deps": [],
+      "ops": {},
+      "workflow_mode": "fast",
+      "requirement_id": "REQ-002",
+      "stats": {
+        "start_time": "2026-10-31T07:20:38.482Z",
+        "end_time": "2026-10-31T07:32:15.683Z",
+        "duration_ms": 697201
+      }
+    }
+  },
+  "reviews": [
+    {
+      "id": "REV-001",
+      "op": "v1.2.0-stage-01",
+      "stage": "v1.2.0-stage-01",
+      "status": "open",
+      "priority": "medium",
+      "title": "5.8 运行日志出现 Failed to bind native function OnOpen/OnClose 警告，但 JS 生命周期日志正常",
+      "filed_by": "cli",
+      "filed_at": "2026-10-31T07:31:59.204Z",
+      "canAutoFix": false,
+      "blocking": false
+    }
+  ],
+  "log": [
+    {
+      "time": "2026-10-31T07:20:30.137Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:38.476Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:abd01a65"
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:43.582Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:d4729d06"
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:45.438Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:8fe5d517"
+      }
+    },
+    {
+      "time": "2026-10-31T07:32:01.578Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "from": "exec_running",
+        "to": "review_pending",
+        "session_id": "proc:a8381970"
+      }
+    },
+    {
+      "time": "2026-10-31T07:32:07.643Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "from": "review_pending",
+        "to": "review_passed",
+        "session_id": "proc:22b4fe77"
+      }
+    },
+    {
+      "time": "2026-10-31T07:32:11.028Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "from": "review_passed",
+        "to": "archiving",
+        "session_id": "proc:9c5c2630"
+      }
+    },
+    {
+      "time": "2026-10-31T07:32:15.674Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "from": "archiving",
+        "to": "done",
+        "session_id": "proc:a354c37d"
+      }
+    }
+  ],
+  "counts": {
+    "stages": 1,
+    "reviews": 1,
+    "log": 8
+  },
+  "schemaVersion": 1,
+  "archived_at": "2026-10-31T07:32:29.016Z"
+}

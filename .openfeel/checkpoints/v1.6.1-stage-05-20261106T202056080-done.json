@@ -1,0 +1,1289 @@
+{
+  "meta": {
+    "version": "1.0",
+    "project": "OpenFeel",
+    "updated": "2026-11-06T12:20:41.530Z",
+    "revision": 163,
+    "archived_versions": [
+      "v1.1.0",
+      "v1.2.0",
+      "v1.3.0",
+      "v1.4.0",
+      "v1.6.0"
+    ],
+    "last_req_seq": 10
+  },
+  "pipeline": {
+    "phase": "active",
+    "current": {
+      "stage": "v1.6.1-stage-05",
+      "op": "op-001"
+    },
+    "retry": 0
+  },
+  "stages": {
+    "v1.5.0-stage-03": {
+      "name": "v1.5.0-stage-03",
+      "phase": "exec_running",
+      "status": "planned",
+      "deps": [],
+      "ops": {},
+      "workflow_mode": "fast",
+      "requirements": [
+        {
+          "id": "REQ-005",
+          "order": 0
+        },
+        {
+          "id": "REQ-006",
+          "order": 1
+        }
+      ],
+      "stats": {
+        "start_time": "2026-11-01T14:36:23.388Z",
+        "end_time": "",
+        "duration_ms": 0
+      }
+    },
+    "v1.6.1-stage-05": {
+      "name": "v1.6.1-stage-05",
+      "phase": "done",
+      "status": "archiving",
+      "deps": [],
+      "ops": {
+        "op-001": {
+          "title": "CORUI 插件只读审查（Codex gpt-6.1-sol）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          }
+        },
+        "op-002": {
+          "title": "W1 根/池 GC 所有权（F1）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          }
+        },
+        "op-003": {
+          "title": "W2 栈/激活事务与重入（F3/F7/F8）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          }
+        },
+        "op-004": {
+          "title": "W3 UI/JS 启动顺序与统一关闭边界（F4/F5）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          }
+        },
+        "op-005": {
+          "title": "W4 异步 exactly-once/会话取消/Streamable/TS 定时器（F2/F6/F9/F10）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          }
+        },
+        "op-006": {
+          "title": "W5 编辑器扩展清理与 Mixin 生成健壮性（F11/F12）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          }
+        },
+        "op-007": {
+          "title": "W6 TS 初始化契约与调试面板 FPS（F13/F14）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          }
+        }
+      },
+      "workflow_mode": "fast",
+      "stats": {
+        "start_time": "2026-11-05T14:26:53.300Z",
+        "end_time": "",
+        "duration_ms": 0
+      },
+      "requirements": [
+        {
+          "id": "REQ-009",
+          "order": 0
+        },
+        {
+          "id": "REQ-010",
+          "order": 1
+        }
+      ],
+      "verification": {
+        "result": "pass",
+        "kind": "test",
+        "by": "feel",
+        "at": "2026-11-06T12:20:41.529Z",
+        "note": "F1–F14 全覆盖；REQ-010 已完成 review/verify；发布检查无未完成需求。",
+        "evidence": "Build.bat W1–W6 各波 Succeeded + 末次全量 Succeeded；tsc -p tsconfig.json exit 0；PIE 三次会话冒烟（GameStart→GameLoading→观澜台，生命周期配对无崩溃）；独立复审无 P1 且 8 项 P2/P3 已修复；记录见 docs/reviews/corui-fix-record-2026-11-05.md"
+      }
+    }
+  },
+  "reviews": [],
+  "log": [
+    {
+      "time": "2026-10-31T06:15:23.798Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-001",
+        "title": "升级 Puerts 到 Unreal_v1.0.9 并修复 CORUI 控件 RemoveFromParent 不析构"
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:27.934Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.1.0-stage-01",
+        "requirementId": "REQ-001"
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:28.403Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.1.0-stage-02",
+        "requirementId": "REQ-001"
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:30.844Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-001",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-10-31T06:30:15.616Z",
+      "agent": "cli",
+      "action": "requirement_auto_done",
+      "detail": {
+        "requirementId": "REQ-001",
+        "from": "scheduled",
+        "to": "done",
+        "triggerStage": "v1.1.0-stage-02"
+      }
+    },
+    {
+      "time": "2026-10-31T06:30:29.518Z",
+      "agent": "cli",
+      "action": "archive_flow_version",
+      "detail": {
+        "version": "v1.1.0",
+        "stages": 2,
+        "reviews": 4,
+        "log": 16
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:28.135Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-002",
+        "title": "整体迁移到 UE 5.8（目标设置、CORUI 兼容、编译与运行验证）"
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:34.045Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.2.0-stage-01",
+        "requirementId": "REQ-002"
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:35.651Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-002",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:47.922Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-002",
+        "from": "scheduled",
+        "to": "in_progress"
+      }
+    },
+    {
+      "time": "2026-10-31T07:32:15.701Z",
+      "agent": "cli",
+      "action": "requirement_auto_done",
+      "detail": {
+        "requirementId": "REQ-002",
+        "from": "in_progress",
+        "to": "done",
+        "triggerStage": "v1.2.0-stage-01"
+      }
+    },
+    {
+      "time": "2026-10-31T07:32:29.032Z",
+      "agent": "cli",
+      "action": "archive_flow_version",
+      "detail": {
+        "version": "v1.2.0",
+        "stages": 1,
+        "reviews": 1,
+        "log": 8
+      }
+    },
+    {
+      "time": "2026-10-31T16:24:01.214Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-003",
+        "title": "修复 VS/MSBuild 构建失败：恢复 Puerts ThirdParty V8 9.4 运行库"
+      }
+    },
+    {
+      "time": "2026-10-31T16:24:09.584Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.3.0-stage-01",
+        "requirementId": "REQ-003"
+      }
+    },
+    {
+      "time": "2026-10-31T16:24:12.212Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-003",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-10-31T16:24:25.032Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-003",
+        "from": "scheduled",
+        "to": "in_progress"
+      }
+    },
+    {
+      "time": "2026-10-31T16:31:07.773Z",
+      "agent": "cli",
+      "action": "requirement_auto_done",
+      "detail": {
+        "requirementId": "REQ-003",
+        "from": "in_progress",
+        "to": "done",
+        "triggerStage": "v1.3.0-stage-01"
+      }
+    },
+    {
+      "time": "2026-10-31T16:31:16.753Z",
+      "agent": "cli",
+      "action": "archive_flow_version",
+      "detail": {
+        "version": "v1.3.0",
+        "stages": 1,
+        "reviews": 1,
+        "log": 8
+      }
+    },
+    {
+      "time": "2026-10-31T16:36:30.051Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-004",
+        "title": "修复 UI_GameStart 的 null 赋值类型错误并说明 TS 编译方式"
+      }
+    },
+    {
+      "time": "2026-10-31T16:36:36.654Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.4.0-stage-01",
+        "requirementId": "REQ-004"
+      }
+    },
+    {
+      "time": "2026-10-31T16:36:39.358Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-004",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-10-31T16:38:18.297Z",
+      "agent": "cli",
+      "action": "requirement_auto_done",
+      "detail": {
+        "requirementId": "REQ-004",
+        "from": "scheduled",
+        "to": "done",
+        "triggerStage": "v1.4.0-stage-01"
+      }
+    },
+    {
+      "time": "2026-10-31T16:38:26.190Z",
+      "agent": "cli",
+      "action": "archive_flow_version",
+      "detail": {
+        "version": "v1.4.0",
+        "stages": 1,
+        "reviews": 0,
+        "log": 8
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:14.754Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-005",
+        "title": "允许 UI_GameStart 的 ImgPathList/TextList 为 null（保持原语义）"
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:18.372Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:22.419Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.5.0-stage-03",
+        "requirementId": "REQ-005",
+        "action": "link"
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:22.873Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-005",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:23.383Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:0bc00ca7"
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:28.131Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:3a972730"
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:29.182Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.5.0-stage-03",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:1bc32994"
+      }
+    },
+    {
+      "time": "2026-11-01T14:36:30.262Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-005",
+        "from": "scheduled",
+        "to": "in_progress"
+      }
+    },
+    {
+      "time": "2026-11-01T14:37:00.054Z",
+      "agent": "cli",
+      "action": "requirement_review",
+      "detail": {
+        "id": "REQ-005",
+        "result": "pass",
+        "by": "feel",
+        "independent": false
+      }
+    },
+    {
+      "time": "2026-11-01T14:37:00.490Z",
+      "agent": "cli",
+      "action": "requirement_verification",
+      "detail": {
+        "id": "REQ-005",
+        "result": "pass",
+        "kind": "test",
+        "by": "feel"
+      }
+    },
+    {
+      "time": "2026-11-01T14:37:00.965Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-005",
+        "from": "in_progress",
+        "to": "done"
+      }
+    },
+    {
+      "time": "2026-11-03T15:25:01.673Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-006",
+        "title": "启用 UE 5.8 内置 Unreal MCP 与客户端配置"
+      }
+    },
+    {
+      "time": "2026-11-03T15:25:17.621Z",
+      "agent": "cli",
+      "action": "requirement_claim",
+      "detail": {
+        "id": "REQ-006",
+        "owner": "Liuary"
+      }
+    },
+    {
+      "time": "2026-11-03T15:25:19.795Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.5.0-stage-03",
+        "requirementId": "REQ-006",
+        "action": "link"
+      }
+    },
+    {
+      "time": "2026-11-03T15:25:21.832Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-006",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-11-03T15:33:07.080Z",
+      "agent": "cli",
+      "action": "requirement_review",
+      "detail": {
+        "id": "REQ-006",
+        "result": "pass",
+        "by": "feel",
+        "independent": false
+      }
+    },
+    {
+      "time": "2026-11-03T15:33:09.072Z",
+      "agent": "cli",
+      "action": "requirement_verification",
+      "detail": {
+        "id": "REQ-006",
+        "result": "pass",
+        "kind": "manual",
+        "by": "feel"
+      }
+    },
+    {
+      "time": "2026-11-03T15:33:27.021Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-006",
+        "from": "scheduled",
+        "to": "in_progress"
+      }
+    },
+    {
+      "time": "2026-11-03T15:33:29.283Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-006",
+        "from": "in_progress",
+        "to": "done"
+      }
+    },
+    {
+      "time": "2026-11-03T15:49:48.418Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-007",
+        "title": "《观澜》CORUI 测试套件：系列 UI 窗口、TS Mixin 与自检"
+      }
+    },
+    {
+      "time": "2026-11-03T15:49:52.309Z",
+      "agent": "cli",
+      "action": "requirement_claim",
+      "detail": {
+        "id": "REQ-007",
+        "owner": "Liuary"
+      }
+    },
+    {
+      "time": "2026-11-03T15:49:55.007Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.6.0-stage-04",
+        "requirementId": "REQ-007",
+        "action": "link"
+      }
+    },
+    {
+      "time": "2026-11-03T16:18:49.143Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-007",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-11-03T16:18:53.483Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-007",
+        "from": "scheduled",
+        "to": "in_progress"
+      }
+    },
+    {
+      "time": "2026-11-03T16:52:56.155Z",
+      "agent": "openfeel-reviewer",
+      "action": "review_accept",
+      "detail": {
+        "reviewId": "REV-001"
+      }
+    },
+    {
+      "time": "2026-11-05T14:16:21.264Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-008",
+        "title": "修复 PuertsMixinGenerator DesignerExtension 两处生命周期崩溃"
+      }
+    },
+    {
+      "time": "2026-11-05T14:16:28.096Z",
+      "agent": "cli",
+      "action": "requirement_claim",
+      "detail": {
+        "id": "REQ-008",
+        "owner": "Liuary"
+      }
+    },
+    {
+      "time": "2026-11-05T14:16:33.371Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-008",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-11-05T14:16:37.342Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-008",
+        "from": "scheduled",
+        "to": "in_progress"
+      }
+    },
+    {
+      "time": "2026-11-05T14:16:43.410Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.6.0-stage-04",
+        "requirementId": "REQ-008",
+        "action": "link"
+      }
+    },
+    {
+      "time": "2026-11-05T14:16:49.528Z",
+      "agent": "cli",
+      "action": "requirement_review",
+      "detail": {
+        "id": "REQ-007",
+        "result": "pass",
+        "by": "Feel",
+        "independent": false
+      }
+    },
+    {
+      "time": "2026-11-05T14:16:55.619Z",
+      "agent": "cli",
+      "action": "requirement_verification",
+      "detail": {
+        "id": "REQ-007",
+        "result": "pass",
+        "kind": "manual",
+        "by": "Feel"
+      }
+    },
+    {
+      "time": "2026-11-05T14:17:01.450Z",
+      "agent": "cli",
+      "action": "requirement_review",
+      "detail": {
+        "id": "REQ-008",
+        "result": "pass",
+        "by": "Feel",
+        "independent": false
+      }
+    },
+    {
+      "time": "2026-11-05T14:17:08.479Z",
+      "agent": "cli",
+      "action": "requirement_verification",
+      "detail": {
+        "id": "REQ-008",
+        "result": "pass",
+        "kind": "build",
+        "by": "Feel"
+      }
+    },
+    {
+      "time": "2026-11-05T14:17:20.598Z",
+      "agent": "openfeel-reviewer",
+      "action": "review_accept",
+      "detail": {
+        "reviewId": "REV-002"
+      }
+    },
+    {
+      "time": "2026-11-05T14:24:37.245Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-007",
+        "from": "in_progress",
+        "to": "done"
+      }
+    },
+    {
+      "time": "2026-11-05T14:24:50.309Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-008",
+        "from": "in_progress",
+        "to": "done"
+      }
+    },
+    {
+      "time": "2026-11-05T14:25:03.639Z",
+      "agent": "cli",
+      "action": "stage_verification",
+      "detail": {
+        "stage": "v1.6.0-stage-04",
+        "result": "pass",
+        "kind": "manual",
+        "by": "Feel"
+      }
+    },
+    {
+      "time": "2026-11-05T14:25:45.068Z",
+      "agent": "cli",
+      "action": "archive_flow_version",
+      "detail": {
+        "version": "v1.6.0",
+        "stages": 1,
+        "reviews": 2,
+        "log": 14,
+        "requirements": 2
+      }
+    },
+    {
+      "time": "2026-11-05T14:26:33.418Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-11-05T14:26:53.297Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:2738f6b5"
+      }
+    },
+    {
+      "time": "2026-11-05T14:26:58.823Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:9eb952e6"
+      }
+    },
+    {
+      "time": "2026-11-05T14:27:05.393Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:eb7d371a"
+      }
+    },
+    {
+      "time": "2026-11-05T14:27:10.556Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-009",
+        "title": "CORUI 插件只读审查（Codex gpt-6.1-sol）"
+      }
+    },
+    {
+      "time": "2026-11-05T14:27:15.073Z",
+      "agent": "cli",
+      "action": "requirement_claim",
+      "detail": {
+        "id": "REQ-009",
+        "owner": "Liuary"
+      }
+    },
+    {
+      "time": "2026-11-05T14:27:20.921Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-009",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-11-05T14:27:26.592Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-009",
+        "from": "scheduled",
+        "to": "in_progress"
+      }
+    },
+    {
+      "time": "2026-11-05T14:27:32.202Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.6.1-stage-05",
+        "requirementId": "REQ-009",
+        "action": "link"
+      }
+    },
+    {
+      "time": "2026-11-05T14:28:01.782Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-001"
+      }
+    },
+    {
+      "time": "2026-11-05T14:34:33.060Z",
+      "agent": "cli",
+      "action": "requirement_review",
+      "detail": {
+        "id": "REQ-009",
+        "result": "pass",
+        "by": "Codex gpt-6.1-sol",
+        "independent": true
+      }
+    },
+    {
+      "time": "2026-11-05T14:34:39.542Z",
+      "agent": "cli",
+      "action": "requirement_verification",
+      "detail": {
+        "id": "REQ-009",
+        "result": "pass",
+        "kind": "manual",
+        "by": "Feel"
+      }
+    },
+    {
+      "time": "2026-11-05T14:34:46.608Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-009",
+        "from": "in_progress",
+        "to": "done"
+      }
+    },
+    {
+      "time": "2026-11-05T14:38:27.120Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-010",
+        "title": "按审查修复计划处理 CORUI F1–F14（所有权/重入/生命周期/异步/编辑器/TS）"
+      }
+    },
+    {
+      "time": "2026-11-05T14:38:31.602Z",
+      "agent": "cli",
+      "action": "requirement_claim",
+      "detail": {
+        "id": "REQ-010",
+        "owner": "Liuary"
+      }
+    },
+    {
+      "time": "2026-11-05T14:38:36.254Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-010",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-11-05T14:38:41.258Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-010",
+        "from": "scheduled",
+        "to": "in_progress"
+      }
+    },
+    {
+      "time": "2026-11-05T14:38:45.899Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.6.1-stage-05",
+        "requirementId": "REQ-010",
+        "action": "link"
+      }
+    },
+    {
+      "time": "2026-11-05T14:56:47.136Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-002"
+      }
+    },
+    {
+      "time": "2026-11-05T14:58:58.266Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-003"
+      }
+    },
+    {
+      "time": "2026-11-05T15:19:40.646Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-004"
+      }
+    },
+    {
+      "time": "2026-11-05T15:19:44.779Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-005"
+      }
+    },
+    {
+      "time": "2026-11-05T15:19:49.809Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-006"
+      }
+    },
+    {
+      "time": "2026-11-05T15:19:54.454Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-007"
+      }
+    },
+    {
+      "time": "2026-11-05T15:25:09.584Z",
+      "agent": "cli",
+      "action": "requirement_verification",
+      "detail": {
+        "id": "REQ-010",
+        "result": "pass",
+        "kind": "test",
+        "by": "feel"
+      }
+    },
+    {
+      "time": "2026-11-05T15:32:39.156Z",
+      "agent": "cli",
+      "action": "requirement_review",
+      "detail": {
+        "id": "REQ-010",
+        "result": "pass",
+        "by": "independent-review-agent",
+        "independent": true
+      }
+    },
+    {
+      "time": "2026-11-05T15:32:43.784Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-010",
+        "from": "in_progress",
+        "to": "done"
+      }
+    },
+    {
+      "time": "2026-11-05T15:32:49.192Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "exec_running",
+        "to": "review_pending",
+        "session_id": "proc:2d54425b"
+      }
+    },
+    {
+      "time": "2026-11-05T15:32:57.094Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "review_pending",
+        "to": "review_passed",
+        "session_id": "proc:8edfb929"
+      }
+    },
+    {
+      "time": "2026-11-06T12:20:36.939Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "review_passed",
+        "to": "archiving",
+        "session_id": "proc:b2c6549a"
+      }
+    },
+    {
+      "time": "2026-11-06T12:20:41.529Z",
+      "agent": "cli",
+      "action": "stage_verification",
+      "detail": {
+        "stage": "v1.6.1-stage-05",
+        "result": "pass",
+        "kind": "test",
+        "by": "feel"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "升级 Puerts 到 Unreal_v1.0.9 并修复 CORUI 控件 RemoveFromParent 不析构",
+      "status": "done",
+      "created_at": "2026-10-31T06:15:23.798Z",
+      "updated_at": "2026-10-31T06:30:15.616Z",
+      "target_version": "v1.1.0",
+      "priority": "P0",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-001.md"
+    },
+    {
+      "id": "REQ-002",
+      "title": "整体迁移到 UE 5.8（目标设置、CORUI 兼容、编译与运行验证）",
+      "status": "done",
+      "created_at": "2026-10-31T07:20:28.134Z",
+      "updated_at": "2026-10-31T07:32:15.701Z",
+      "target_version": "v1.2.0",
+      "priority": "P0",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-002.md"
+    },
+    {
+      "id": "REQ-003",
+      "title": "修复 VS/MSBuild 构建失败：恢复 Puerts ThirdParty V8 9.4 运行库",
+      "status": "done",
+      "created_at": "2026-10-31T16:24:01.214Z",
+      "updated_at": "2026-10-31T16:31:07.773Z",
+      "target_version": "v1.3.0",
+      "priority": "P0",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-003.md"
+    },
+    {
+      "id": "REQ-004",
+      "title": "修复 UI_GameStart 的 null 赋值类型错误并说明 TS 编译方式",
+      "status": "done",
+      "created_at": "2026-10-31T16:36:30.050Z",
+      "updated_at": "2026-10-31T16:38:18.297Z",
+      "target_version": "v1.4.0",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-004.md"
+    },
+    {
+      "id": "REQ-005",
+      "title": "允许 UI_GameStart 的 ImgPathList/TextList 为 null（保持原语义）",
+      "status": "done",
+      "created_at": "2026-11-01T14:36:14.753Z",
+      "updated_at": "2026-11-01T14:37:00.964Z",
+      "target_version": "v1.5.0",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-005.md",
+      "review": {
+        "result": "pass",
+        "by": "feel",
+        "at": "2026-11-01T14:37:00.054Z",
+        "note": "self-review：字段改为 string[] | null，保留 null 初始化；Start 用局部变量收窄并保留 shift 空值保护。",
+        "independent": false
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "test",
+        "by": "feel",
+        "at": "2026-11-01T14:37:00.490Z",
+        "note": "tsc 正常配置 0 错误；strictNullChecks 下 UI_GameStart 无报错；tsc -p tsconfig.json 成功生成 JS。",
+        "evidence": "D:\\Downloads\\tscheck\\node_modules\\typescript\\bin\\tsc --noEmit -p tsconfig.json; --strictNullChecks --skipLibCheck; tsc -p tsconfig.json"
+      }
+    },
+    {
+      "id": "REQ-006",
+      "title": "启用 UE 5.8 内置 Unreal MCP 与客户端配置",
+      "status": "done",
+      "created_at": "2026-11-03T15:25:01.673Z",
+      "updated_at": "2026-11-03T15:33:29.283Z",
+      "target_version": "v1.5.0",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-006.md",
+      "owner": "Liuary",
+      "claimed_at": "2026-11-03T15:25:17.621Z",
+      "review": {
+        "result": "pass",
+        "by": "feel",
+        "at": "2026-11-03T15:33:07.080Z",
+        "note": "self-review：启用 ModelContextProtocol/AllToolsets/Terminal；写入自动启动配置与 .mcp.json/.vscode/mcp.json；安装并启用 Blender MCP addon。",
+        "independent": false
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "manual",
+        "by": "feel",
+        "at": "2026-11-03T15:33:09.072Z",
+        "note": "Unreal MCP 自动启动已验证；Blender MCP 需 GUI 启动 Blender 后才监听 9876。",
+        "evidence": "UE5.8 editor launch -> TCP 127.0.0.1:8000 open, LogModelContextProtocol emitted; Blender addon installed/enabled (blender -b cannot host server by design)."
+      }
+    },
+    {
+      "id": "REQ-009",
+      "title": "CORUI 插件只读审查（Codex gpt-6.1-sol）",
+      "status": "done",
+      "created_at": "2026-11-05T14:27:10.556Z",
+      "updated_at": "2026-11-05T14:34:46.607Z",
+      "target_version": "v1.6.1",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-009.md",
+      "owner": "Liuary",
+      "claimed_at": "2026-11-05T14:27:15.073Z",
+      "review": {
+        "result": "pass",
+        "by": "Codex gpt-6.1-sol",
+        "at": "2026-11-05T14:34:33.060Z",
+        "note": "独立只读审查：覆盖 CORUI/JsEnvManager/PuertsMixinGenerator 与 TS 桥接面；245 行报告，6 个 P1、7 个 P2、1 个 P3，无 P0；Top 5 风险与 REQ 候选已列出。",
+        "independent": true
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "manual",
+        "by": "Feel",
+        "at": "2026-11-05T14:34:39.542Z",
+        "note": "报告已落盘，含范围/方法、总体结论、带 file:line 的分级发现、架构/生命周期/异步/JS 桥接专项、Top 5 风险与后续 REQ 候选、不确定项。",
+        "evidence": "docs/reviews/corui-review-2026-11-05.md（21 KB / 245 行）"
+      }
+    },
+    {
+      "id": "REQ-010",
+      "title": "按审查修复计划处理 CORUI F1–F14（所有权/重入/生命周期/异步/编辑器/TS）",
+      "status": "done",
+      "created_at": "2026-11-05T14:38:27.120Z",
+      "updated_at": "2026-11-05T15:32:43.784Z",
+      "target_version": "v1.6.1",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-010.md",
+      "owner": "Liuary",
+      "claimed_at": "2026-11-05T14:38:31.602Z",
+      "verification": {
+        "result": "pass",
+        "kind": "test",
+        "by": "feel",
+        "at": "2026-11-05T15:25:09.583Z",
+        "note": "W1–W6 六波独立构建 Succeeded，末次全量构建 Succeeded；tsc -p tsconfig.json exit 0；PIE（PlayMode_InViewPort）两次会话冒烟通过：GameStart→GameLoading→观澜台链路正常，OnScriptInit 先于 Open，窗口名回退为 CDO 名，Push 与 OnClose/Destruct 日志配对、无重复释放、无崩溃；StopPIE 关闭边界清理干净。",
+        "evidence": "Build.bat CultivationOpenRealmEditor Win64 Development (W1–W6 each Succeeded); node .../tsc.js -p tsconfig.json (exit 0); MCP StartPIE + LogsToolset 会话日志（docs/reviews/corui-fix-record-2026-11-05.md §0）"
+      },
+      "review": {
+        "result": "pass",
+        "by": "independent-review-agent",
+        "at": "2026-11-05T15:32:39.156Z",
+        "note": "独立只读复审整份 diff（Codex 容量不可用，改独立 agent）：无 P1；未发现双 NativeOpen 或零/双次终止回调；容器重入、会话代际、GC 所有权、扩展清理判定成立。提出 10 项（3×P2/7×P3），已修复 8 项代码缺陷（同步完成时在途残留、GameLoading 关闭顺序、回调内重复 Push 的去重弹出、状态返回值、final teardown 回调抑制、Streamable 取消后补发终态与部分无效列表、Mixin 提前返回、登记表失效条目），其余 2 项为文档化（PushUI 成功语义）与提交卫生提醒。",
+        "independent": true
+      }
+    }
+  ]
+}

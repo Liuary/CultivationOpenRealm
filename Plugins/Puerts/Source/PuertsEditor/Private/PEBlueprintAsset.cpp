@@ -1,6 +1,6 @@
 /*
  * Tencent is pleased to support the open source community by making Puerts available.
- * Copyright (C) 2020 THL A29 Limited, a Tencent company.  All rights reserved.
+ * Copyright (C) 2020 Tencent.  All rights reserved.
  * Puerts is licensed under the BSD 3-Clause License, except for the third-party components listed in the file 'LICENSE' which may
  * be subject to their corresponding license terms. This file is subject to the terms and conditions defined in file 'LICENSE',
  * which is part of this source code package.
@@ -44,6 +44,14 @@
 #include "HAL/PlatformFileManager.h"
 #include "Framework/Application/SlateApplication.h"
 #include "Misc/MessageDialog.h"
+
+// UE 5.8 deprecates REN_ForceNoResetLoaders: UObject::Rename no longer calls ResetLoaders, so the flag has no effect
+// there. Earlier engines keep it, where Rename would otherwise reset the package loaders.
+#if ENGINE_MAJOR_VERSION > 5 || (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 8)
+#define PUERTS_RENAME_FLAGS (REN_DontCreateRedirectors | REN_DoNotDirty)
+#else
+#define PUERTS_RENAME_FLAGS (REN_DontCreateRedirectors | REN_DoNotDirty | REN_ForceNoResetLoaders)
+#endif
 
 #define LOCTEXT_NAMESPACE "UPEBlueprintAsset"
 
@@ -556,8 +564,8 @@ void UPEBlueprintAsset::AddFunction(FName InName, bool IsVoid, FPEGraphPinType I
                 UEdGraph* ExistingGraph = FindObject<UEdGraph>(Blueprint, *(InName.ToString()));
                 if (ExistingGraph)
                 {
-                    ExistingGraph->Rename(*FString::Printf(TEXT("%s%s"), *ExistingGraph->GetName(), TEXT("__Removed")), nullptr,
-                        REN_DontCreateRedirectors | REN_DoNotDirty | REN_ForceNoResetLoaders);
+                    ExistingGraph->Rename(
+                        *FString::Printf(TEXT("%s%s"), *ExistingGraph->GetName(), TEXT("__Removed")), nullptr, PUERTS_RENAME_FLAGS);
                 }
 
                 UK2Node_CustomEvent* EventNode = FEdGraphSchemaAction_K2NewNode::SpawnNode<UK2Node_CustomEvent>(EventGraph,
@@ -608,8 +616,8 @@ void UPEBlueprintAsset::AddFunction(FName InName, bool IsVoid, FPEGraphPinType I
                 UEdGraph* ExistingGraph = FindObject<UEdGraph>(Blueprint, *(InName.ToString()));
                 if (ExistingGraph)
                 {
-                    ExistingGraph->Rename(*FString::Printf(TEXT("%s%s"), *ExistingGraph->GetName(), TEXT("__Removed")), nullptr,
-                        REN_DontCreateRedirectors | REN_DoNotDirty | REN_ForceNoResetLoaders);
+                    ExistingGraph->Rename(
+                        *FString::Printf(TEXT("%s%s"), *ExistingGraph->GetName(), TEXT("__Removed")), nullptr, PUERTS_RENAME_FLAGS);
                 }
             }
             FunctionGraph = FBlueprintEditorUtils::CreateNewGraph(Blueprint,
@@ -1188,6 +1196,11 @@ void UPEBlueprintAsset::AddMemberVariableWithMetaData(FName InNewVarName, FPEGra
         EPropertyFlags InputFlags = static_cast<EPropertyFlags>((static_cast<uint64>(InHFLags) << 32) + InLFlags);
 
         InputFlags |= InMetaData->PropertyFlags;
+        // meta data has instanced specifier
+        if (InMetaData->MetaData.Contains(TEXT("EditInline")))
+        {
+            InputFlags &= ~CPF_DisableEditOnInstance;
+        }
         InLFlags = (static_cast<uint64>(InputFlags) & 0xffffffff);
         InHFLags = (static_cast<uint64>(InputFlags) >> 32);
     }
@@ -1392,3 +1405,5 @@ void UPEBlueprintAsset::Save()
     }
     FunctionAdded.Empty();
 }
+
+#undef PUERTS_RENAME_FLAGS

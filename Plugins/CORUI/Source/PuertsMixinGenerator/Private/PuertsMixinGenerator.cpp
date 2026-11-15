@@ -46,6 +46,8 @@ void FPuertsMixinGeneratorModule::StartupModule()
 	}
 
 	Factory = MakeShared<FPmgDesignerExtensionFactory>();
+	// 工厂创建的扩展登记到模块的存活表，保证模块关闭时能触达
+	Factory->SetExtensionRegistry(&ActiveExtensions);
 	
 	// 构造控件蓝图编辑器视口扩展
 	IUMGEditorModule* UMGEditorInterface = FModuleManager::GetModulePtr<IUMGEditorModule>("UMGEditor");
@@ -163,15 +165,15 @@ void FPuertsMixinGeneratorModule::RegisterMenus()
 
 void FPuertsMixinGeneratorModule::CleanupActiveExtensions()
 {
-	for (auto& WeakExtension : ActiveExtensions)
+	// 先快照并清空登记表：Cleanup 过程中扩展可能析构/重新登记，不能边遍历边改
+	TArray<TWeakPtr<FPmgDesignerExtension>> Extensions = ActiveExtensions;
+	ActiveExtensions.Empty();
+
+	for (const TWeakPtr<FPmgDesignerExtension>& WeakExtension : Extensions)
 	{
-		if (WeakExtension.IsValid())
+		if (TSharedPtr<FPmgDesignerExtension> Extension = WeakExtension.Pin())
 		{
-			TSharedPtr<FPmgDesignerExtension> Extension = WeakExtension.Pin();
-			if (Extension.IsValid())
-			{
-				Extension->Cleanup();
-			}
+			Extension->Cleanup();
 		}
 	}
 }
@@ -233,22 +235,20 @@ void FPuertsMixinGeneratorModule::GeneratePuertsMixinFile()
 	// 获取生成文件路径：项目目录 + 生成目录 + 资产目录 + 资产名 + .ts
 	FString GeneratedFilePath = FPaths::ProjectDir() / GeneratedDir / AssetDir / GenerateName + ".ts";
 
+	// 生成类：后续所有内容都强依赖它。缺失时明确报错，并只跳过该文件（Import 列表仍会刷新）。
+	UClass* GeneratedClass = Blueprint->GeneratedClass;
+	if (!GeneratedClass)
+	{
+		FMessageDialog::Open(EAppMsgType::Ok,
+			LOCTEXT("NoGeneratedClass",
+				"蓝图尚未编译（没有 GeneratedClass），已跳过该文件的 Mixin 生成；Import 列表仍会刷新。请先编译蓝图后重试。"));
+	}
+
 	// 检查文件是否已经生成，未生成才会生成新的文件
-	if (!FPaths::FileExists(GeneratedFilePath))
+	if (GeneratedClass && !FPaths::FileExists(GeneratedFilePath))
 	{
 		// 获取资产路径
-		FString AssetPath;
-
-		// 获取生成的类
-		if (UClass* GeneratedClass = Blueprint->GeneratedClass)
-		{
-			AssetPath = GeneratedClass->GetPathName();
-		}
-		else
-		{
-			// 备选方案：使用命名约定
-			AssetPath = FString::Printf(TEXT("%s_C"), *Blueprint->GetName());
-		}
+		FString AssetPath = GeneratedClass->GetPathName();
 
 		// 将路径的 / 替换为 .
 		FString AssetPathPoint = AssetPath;
@@ -282,14 +282,14 @@ void FPuertsMixinGeneratorModule::GeneratePuertsMixinFile()
 		// FileContent += FString::Printf(TEXT("\tconstructor() {\n\n\t}\n"));
 		
 		// 如果是 UUserWidget 的子类，那么增加专有的生命周期
-		if (Blueprint->GeneratedClass->IsChildOf(UUserWidget::StaticClass()))
+		if (GeneratedClass->IsChildOf(UUserWidget::StaticClass()))
 		{
 			FileContent += FString::Printf(TEXT("\tConstruct() {\n\n\t}\n"));
 			FileContent += FString::Printf(TEXT("\tDestruct() {\n\n\t}\n"));
 		}
 		
 		// 如果是 UCORUserWidget 的子类，那么增加专有的生命周期
-		if (Blueprint->GeneratedClass->IsChildOf(UCORUserWidget::StaticClass()))
+		if (GeneratedClass->IsChildOf(UCORUserWidget::StaticClass()))
 		{
 			FileContent += FString::Printf(TEXT("\tOnOpen() {\n\n\t}\n"));
 			FileContent += FString::Printf(TEXT("\tOnClose() {\n\n\t}\n"));
@@ -298,7 +298,7 @@ void FPuertsMixinGeneratorModule::GeneratePuertsMixinFile()
 		}
 		
 		// 如果是 UCORWindow 的子类，那么增加专有的生命周期
-		if (Blueprint->GeneratedClass->IsChildOf(UCORWindow::StaticClass()))
+		if (GeneratedClass->IsChildOf(UCORWindow::StaticClass()))
 		{
 			FileContent += FString::Printf(TEXT("\tOnScriptInit(Single: UISingle) {\n\n\t}\n\n"));
 		}
@@ -307,8 +307,25 @@ void FPuertsMixinGeneratorModule::GeneratePuertsMixinFile()
 		FileContent += FString::Printf(TEXT("}\n"));
 		FileContent += FString::Printf(TEXT("blueprint.mixin(BP_%s, %s);\n"), *AssetName, *GenerateName);
 
-		// 将内容写入到文件中，以UTF8编码
-		FFileHelper::SaveStringToFile(FileContent, *GeneratedFilePath, FFileHelper::EEncodingOptions::ForceUTF8);
+		// 确保生成目录存在：目录创建失败要报错，不能静默丢文件
+		const FString GeneratedFileDir = FPaths::GetPath(GeneratedFilePath);
+		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+		if (!PlatformFile.DirectoryExists(*GeneratedFileDir) && !PlatformFile.CreateDirectoryTree(*GeneratedFileDir))
+		{
+			FMessageDialog::Open(EAppMsgType::Ok,
+				FText::Format(LOCTEXT("CreateDirFailed", "创建 Mixin 生成目录失败：{0}"),
+					FText::FromString(GeneratedFileDir)));
+			return;
+		}
+
+		// 将内容写入到文件中，以UTF8编码；保存失败明确报错
+		if (!FFileHelper::SaveStringToFile(FileContent, *GeneratedFilePath, FFileHelper::EEncodingOptions::ForceUTF8))
+		{
+			FMessageDialog::Open(EAppMsgType::Ok,
+				FText::Format(LOCTEXT("SaveMixinFailed", "保存 Mixin 文件失败（目录不可写？）：{0}"),
+					FText::FromString(GeneratedFilePath)));
+			return;
+		}
 	}
 
 	// mixin生成文件目录完整路径：项目目录 + 生成目录 + 收集目录
@@ -324,7 +341,11 @@ void FPuertsMixinGeneratorModule::GeneratePuertsMixinFile()
 
 		// 检查文件开头是否包含mixin生成标志，如果不包含则不添加到import列表中
 		FString FileContent;
-		FFileHelper::LoadFileToString(FileContent, *FilePath);
+		if (!FFileHelper::LoadFileToString(FileContent, *FilePath))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[PuertsMixinGenerator] failed to read %s, skipped."), *FilePath);
+			continue;
+		}
 		if (!FileContent.Contains(PuertsMixinGeneratorGenerateFlag))
 		{
 			continue;
@@ -343,8 +364,24 @@ void FPuertsMixinGeneratorModule::GeneratePuertsMixinFile()
 	// 生成列表文件完整路径：项目目录 + 生成目录 + import列表文件
 	FString ImportListFullPath = FPaths::ProjectDir() / GeneratedDir / ImportListFilePath;
 
+	// 目录创建与保存结果都要检查，失败时明确报错而不是“看起来成功”
+	const FString ImportListDir = FPaths::GetPath(ImportListFullPath);
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	if (!PlatformFile.DirectoryExists(*ImportListDir) && !PlatformFile.CreateDirectoryTree(*ImportListDir))
+	{
+		FMessageDialog::Open(EAppMsgType::Ok,
+			FText::Format(LOCTEXT("CreateImportDirFailed", "创建 Import 列表目录失败：{0}"),
+				FText::FromString(ImportListDir)));
+		return;
+	}
+
 	// 将内容写入到import列表文件中，以UTF8编码
-	FFileHelper::SaveStringToFile(ImportListContent, *ImportListFullPath, FFileHelper::EEncodingOptions::ForceUTF8);
+	if (!FFileHelper::SaveStringToFile(ImportListContent, *ImportListFullPath, FFileHelper::EEncodingOptions::ForceUTF8))
+	{
+		FMessageDialog::Open(EAppMsgType::Ok,
+			FText::Format(LOCTEXT("SaveImportListFailed", "保存 Import 列表失败（目录不可写？）：{0}"),
+				FText::FromString(ImportListFullPath)));
+	}
 }
 
 

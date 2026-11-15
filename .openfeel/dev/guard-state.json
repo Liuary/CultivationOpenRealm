@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "registered": true,
+  "enforce": "always",
+  "shellGate": "default(1/2=deny,4=warn)",
+  "hostStartedAt": "2026-11-14T09:24:27.509Z",
+  "loaded_hash": "2cd00a105ad10becfb8e47d4fb55ddb84d57e4a1c7cd8b53e5d7c75f288f1ff6",
+  "pid": 62584,
+  "resolvedAt": "2026-11-15T13:51:53.730Z",
+  "cwd": "C:\\Users\\Liuary\\Dev\\Mine\\Unreal\\CultivationOpenRealm",
+  "cwdSource": "agent-session",
+  "degraded": false,
+  "lastDecision": {
+    "at": "2026-11-15T13:51:53.730Z",
+    "tool": "pwsh",
+    "decision": "allow",
+    "reason": "git-worktree-write",
+    "paths": [],
+    "cwd": "C:\\Users\\Liuary\\Dev\\Mine\\Unreal\\CultivationOpenRealm",
+    "cwdSource": "agent-session",
+    "command": "git add .openfeel; git commit -m \"chore(openfeel): 同步运行时状态\" | Select-Object -Last 2"
+  },
+  "updatedAt": "2026-11-15T13:51:53.730Z",
+  "repairedAt": "2026-11-15T12:26:43.360Z",
+  "repairSource": "self-heal",
+  "hmac": "61549395fc1276c5db3ac9d2435e8e1072c60a0aa48c86cafe4649171026f0fc"
+}

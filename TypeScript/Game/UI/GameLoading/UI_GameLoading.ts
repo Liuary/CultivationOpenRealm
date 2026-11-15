@@ -1,10 +1,11 @@
-﻿// PuertsMixinGenerator_Auto_Generator_Flag
+// PuertsMixinGenerator_Auto_Generator_Flag
 import * as UE from 'ue';
 import { blueprint } from 'puerts';
 import UISingle from "../../../Utils/UISingle/UISingle";
 import Log from '../../../Utils/Log/Log';
 import LogType from '../../../Utils/Log/LogType';
 import TimeManager from '../../../Manager/TimeManager';
+import TestUIManager from '../../../Manager/TestUIManager';
 import UISingleType from '../../../Utils/UISingle/UISingleType';
 
 const BP_UI_GameLoading_Class = UE.Class.Load('/Game/UI/GameLoading/UI_GameLoading.UI_GameLoading_C');
@@ -36,6 +37,12 @@ class UI_GameLoading {
 	/** 模拟Tick的间隔时间（毫秒） */
 	private _TickIntervalTime: number = 25;
 
+	/** 加载完成后的延时退出定时器（激活私有，关闭/析构时必须取消） */
+	private _ExitTimer: number = 0;
+
+	/** 激活代际：池复用后对象仍存在但代表新的激活，旧回调不得操作新激活 */
+	private _Activation: number = 0;
+
 	//#endregion 定时器
 
 
@@ -49,12 +56,20 @@ class UI_GameLoading {
 		this._TickIntervalTime = 25;
 		this._CurrentProgress = 0;
 		this._TargetProgress = 100;
+		// Puerts mixin 不会执行 constructor，类字段初始值不会自动生效，必须在这里显式初始化
+		this._ExitTimer = 0;
+		this._Activation = 0;
 	}
 	Destruct() {
-
+		// 析构时激活私有定时器必须全部取消，避免池复用后旧回调操作新激活
+		this.ClearActivationTimers();
 	}
 	OnOpen() {
 		Log.Log(LogType.UI, `[UI_GameLoading][OnOpen]`);
+
+		// 新的激活代际：先清掉上一次激活遗留的定时器
+		this.ClearActivationTimers();
+		this._Activation++;
 
 		this._TickInterval = setInterval(()=>{
 			this.OnTick();
@@ -65,11 +80,7 @@ class UI_GameLoading {
 	OnClose() {
 		Log.Log(LogType.UI, `[UI_GameLoading][OnClose]`);
 
-		if (this._TickInterval) {
-			clearInterval(this._TickInterval);
-			this._TickInterval = 0;
-		}
-
+		this.ClearActivationTimers();
 	}
 	OnShow() {
 
@@ -83,6 +94,19 @@ class UI_GameLoading {
 	//#endregion 生命周期
 
 	//#region 方法
+
+	/** 取消当前激活持有的全部定时器 */
+	private ClearActivationTimers(): void {
+		if (this._TickInterval) {
+			clearInterval(this._TickInterval);
+			this._TickInterval = 0;
+		}
+		if (this._ExitTimer) {
+			clearTimeout(this._ExitTimer);
+			this._ExitTimer = 0;
+		}
+	}
+
 	OnTick(): void{
 
 		if (this._IsCompleted) {
@@ -125,6 +149,24 @@ class UI_GameLoading {
 	private OnLoadingComplete(): void {
 		Log.Log(LogType.UI, `[UI_GameLoading][OnLoadingComplete] Loading Complete. CurrentProgress: ${this._CurrentProgress}, TargetProgress: ${this._TargetProgress}`);
 		this._IsCompleted = true;
+
+		// 开发期入口：加载完成后打开《观澜》测试台，并收起加载界面。
+		if (TestUIManager.Enabled) {
+			// 记录本次激活代际：窗口被关闭/池复用后打开的可能是新激活，旧回调必须放弃
+			const Activation = this._Activation;
+			this._ExitTimer = setTimeout(() => {
+				this._ExitTimer = 0;
+
+				if (Activation !== this._Activation) {
+					Log.Log(LogType.UI, `[UI_GameLoading][OnLoadingComplete] stale callback ignored.`);
+					return;
+				}
+
+				// 先收起加载界面，再打开观澜台：否则 CloseUI(true) 会把刚打开的窗口一起弹掉
+				this.CloseUI(true);
+				TestUIManager.Instance.OpenHub();
+			}, 400) as unknown as number;
+		}
 	}
 
 	//#endregion 方法

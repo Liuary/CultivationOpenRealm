@@ -1,0 +1,180 @@
+{
+  "meta": {
+    "version": "1.0",
+    "project": "OpenFeel",
+    "updated": "2026-10-31T07:20:43.588Z",
+    "revision": 31,
+    "archived_versions": [
+      "v1.1.0"
+    ]
+  },
+  "pipeline": {
+    "phase": "active",
+    "current": {
+      "stage": "v1.2.0-stage-01",
+      "op": ""
+    },
+    "retry": 0
+  },
+  "stages": {
+    "v1.2.0-stage-01": {
+      "name": "v1.2.0-stage-01",
+      "phase": "exec_running",
+      "status": "planned",
+      "deps": [],
+      "ops": {},
+      "workflow_mode": "fast",
+      "requirement_id": "REQ-002",
+      "stats": {
+        "start_time": "2026-10-31T07:20:38.482Z",
+        "end_time": "",
+        "duration_ms": 0
+      }
+    }
+  },
+  "reviews": [],
+  "log": [
+    {
+      "time": "2026-10-31T06:15:23.798Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-001",
+        "title": "升级 Puerts 到 Unreal_v1.0.9 并修复 CORUI 控件 RemoveFromParent 不析构"
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:27.934Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.1.0-stage-01",
+        "requirementId": "REQ-001"
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:28.403Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.1.0-stage-02",
+        "requirementId": "REQ-001"
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:30.844Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-001",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-10-31T06:30:15.616Z",
+      "agent": "cli",
+      "action": "requirement_auto_done",
+      "detail": {
+        "requirementId": "REQ-001",
+        "from": "scheduled",
+        "to": "done",
+        "triggerStage": "v1.1.0-stage-02"
+      }
+    },
+    {
+      "time": "2026-10-31T06:30:29.518Z",
+      "agent": "cli",
+      "action": "archive_flow_version",
+      "detail": {
+        "version": "v1.1.0",
+        "stages": 2,
+        "reviews": 4,
+        "log": 16
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:28.135Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-002",
+        "title": "整体迁移到 UE 5.8（目标设置、CORUI 兼容、编译与运行验证）"
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:30.137Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:34.045Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.2.0-stage-01",
+        "requirementId": "REQ-002"
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:35.651Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-002",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:38.476Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:abd01a65"
+      }
+    },
+    {
+      "time": "2026-10-31T07:20:43.582Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.2.0-stage-01",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:d4729d06"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "升级 Puerts 到 Unreal_v1.0.9 并修复 CORUI 控件 RemoveFromParent 不析构",
+      "status": "done",
+      "created_at": "2026-10-31T06:15:23.798Z",
+      "updated_at": "2026-10-31T06:30:15.616Z",
+      "target_version": "v1.1.0",
+      "priority": "P0",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-001.md"
+    },
+    {
+      "id": "REQ-002",
+      "title": "整体迁移到 UE 5.8（目标设置、CORUI 兼容、编译与运行验证）",
+      "status": "scheduled",
+      "created_at": "2026-10-31T07:20:28.134Z",
+      "updated_at": "2026-10-31T07:20:35.650Z",
+      "target_version": "v1.2.0",
+      "priority": "P0",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-002.md"
+    }
+  ]
+}

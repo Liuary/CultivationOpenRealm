@@ -1,6 +1,6 @@
 /*
  * Tencent is pleased to support the open source community by making Puerts available.
- * Copyright (C) 2020 THL A29 Limited, a Tencent company.  All rights reserved.
+ * Copyright (C) 2020 Tencent.  All rights reserved.
  * Puerts is licensed under the BSD 3-Clause License, except for the third-party components listed in the file 'LICENSE' which may
  * be subject to their corresponding license terms. This file is subject to the terms and conditions defined in file 'LICENSE',
  * which is part of this source code package.
@@ -185,7 +185,7 @@ public:
     };
 
     void BindContainer(void* Ptr, v8::Local<v8::Object> JSObject, void (*Callback)(const v8::WeakCallbackInfo<void>& data),
-        bool PassByPointer, ContainerType Type);
+        bool PassByPointer, ContainerType Type, PropertyMacro* KeyProperty, PropertyMacro* ValueProperty);
 
     virtual void UnBindContainer(void* Ptr) override;
 
@@ -330,6 +330,8 @@ private:
 
     void NewStructByScriptStruct(const v8::FunctionCallbackInfo<v8::Value>& Info);
 
+    void MakeWeakObjectPtr(const v8::FunctionCallbackInfo<v8::Value>& Info);
+
 #if !defined(ENGINE_INDEPENDENT_JSENV)
     void MakeUClass(const v8::FunctionCallbackInfo<v8::Value>& Info);
 
@@ -344,6 +346,8 @@ private:
     void SetInspectorCallback(const v8::FunctionCallbackInfo<v8::Value>& Info);
 
     void DispatchProtocolMessage(const v8::FunctionCallbackInfo<v8::Value>& Info);
+
+    void IsQuickJS(const v8::FunctionCallbackInfo<v8::Value>& Info);
 
 #ifndef WITH_QUICKJS
     v8::MaybeLocal<v8::Module> FetchESModuleTree(v8::Local<v8::Context> Context, const FString& FileName);
@@ -580,6 +584,8 @@ private:
         v8::UniquePersistent<v8::Value> Container;
         bool NeedRelease;
         ContainerType Type;
+        PropertyMacro* KeyProperty;
+        PropertyMacro* ValueProperty;
     };
 
     TMap<void*, ContainerCacheItem> ContainerCache;
@@ -689,6 +695,8 @@ private:
     v8::UniquePersistent<v8::FunctionTemplate> MulticastDelegateTemplate;
 
     v8::UniquePersistent<v8::FunctionTemplate> SoftObjectPtrTemplate;
+
+    v8::UniquePersistent<v8::FunctionTemplate> WeakObjectPtrTemplate;
 
     std::map<void*, DelegateObjectInfo> DelegateMap;
 

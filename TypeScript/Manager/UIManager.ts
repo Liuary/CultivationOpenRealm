@@ -53,19 +53,54 @@ class UIManager extends GameManagerBase{
             return;
         }
 
+        // 传入的数据载荷统一为 UISingle 实例：C++ 在 Open/Show 之前回调，
+        // 这里完成 OnScriptInit 的数据初始化，避免 null 载荷被窗口直接解引用。
+        const Payload: UISingle = Single ?? new UISingle();
+
+        // Puerts 会把 JS undefined 转成字符串 FName：显式传 "None"（等价 NAME_None），
+        // 才能让 C++ 回退到 CDO 里的窗口命名。
+        const Name = WindowName === undefined || WindowName === null ? "None" : WindowName;
+
         CppSubSystem.PushUI(WindowClassPath,  (Success: boolean, WindowName: string, Window: UE.CORWindow)=>{
             Log.Log(LogType.UI, `[UIManager][PushUI] PushUI ${WindowName} Success: ${Success}`);
-            if (Success && Window) {
-                const FuncName = `OnScriptInit`;
-                let InitFunc = Window[FuncName];
-                if (InitFunc) {
-                    // @ts-ignore
-                    InitFunc.call(Window, Single);
-                } else {
-                    Log.Error(LogType.UI, `[UIManager][PushUI] ${WindowName} not has init function ${FuncName}.`);
-                }
+            if (!Success || !Window) {
+                return;
             }
-        }, WindowName, PushLayer, bIsAsync);
+
+            const FuncName = `OnScriptInit`;
+            const InitFunc = (Window as any)[FuncName];
+
+            // 没有钩子是合法情况（纯蓝图窗口不需要脚本初始化）
+            if (InitFunc === undefined || InitFunc === null) {
+                Log.Log(LogType.UI, `[UIManager][PushUI] ${WindowName} has no ${FuncName}, skip.`);
+                return;
+            }
+
+            // 非函数钩子属于契约错误：回滚，避免留下半初始化的激活
+            if (typeof InitFunc !== "function") {
+                Log.Error(LogType.UI, `[UIManager][PushUI] ${WindowName}.${FuncName} is not a function.`);
+                this.RollbackActivation(Window, WindowName);
+                return;
+            }
+
+            try {
+                // 初始化失败必须回滚：此时 C++ 尚未 Open/Show，窗口不会以半初始化状态出现
+                InitFunc.call(Window, Payload);
+            } catch (Error) {
+                Log.Error(LogType.UI, `[UIManager][PushUI] ${WindowName}.${FuncName} threw: ${Error}`);
+                this.RollbackActivation(Window, WindowName);
+            }
+        }, Name, PushLayer, bIsAsync);
+    }
+
+    /** 回滚一次脚本初始化失败的激活 */
+    private RollbackActivation(Window: UE.CORWindow, WindowName: string): void {
+        try {
+            Window.CloseUI(true);
+            Log.Log(LogType.UI, `[UIManager][PushUI] ${WindowName} activation rolled back.`);
+        } catch (Error) {
+            Log.Error(LogType.UI, `[UIManager][PushUI] rollback ${WindowName} failed: ${Error}`);
+        }
     }
 
     /**

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "CORUI/Public/UI/Widget/CORUserWidget.h"
@@ -17,7 +17,14 @@ void UCORUserWidget::Hide()
 
 void UCORUserWidget::NativeDestruct()
 {
-	Hide();
+	UE_LOG(LogTemp, Log, TEXT("[CORUI][Destruct] %s"), *GetName())
+
+	// 析构时Slate可能已经被释放，直接触发隐藏事件，避免对空的Slate设置可见性
+	if (bIsShowing)
+	{
+		NativeHide();
+	}
+
 	Super::NativeDestruct();
 }
 

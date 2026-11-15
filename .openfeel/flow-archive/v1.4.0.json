@@ -1,0 +1,115 @@
+{
+  "version": "v1.4.0",
+  "stages": {
+    "v1.4.0-stage-01": {
+      "name": "v1.4.0-stage-01",
+      "phase": "done",
+      "status": "done",
+      "deps": [],
+      "ops": {},
+      "workflow_mode": "fast",
+      "requirement_id": "REQ-004",
+      "stats": {
+        "start_time": "2026-10-31T16:36:41.539Z",
+        "end_time": "2026-10-31T16:38:18.265Z",
+        "duration_ms": 96726
+      }
+    }
+  },
+  "reviews": [],
+  "log": [
+    {
+      "time": "2026-10-31T16:36:32.116Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.4.0-stage-01",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-10-31T16:36:41.533Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.4.0-stage-01",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:13b5349e"
+      }
+    },
+    {
+      "time": "2026-10-31T16:36:48.286Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.4.0-stage-01",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:a66fee78"
+      }
+    },
+    {
+      "time": "2026-10-31T16:36:50.677Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.4.0-stage-01",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:c4e49bc4"
+      }
+    },
+    {
+      "time": "2026-10-31T16:38:01.072Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.4.0-stage-01",
+        "from": "exec_running",
+        "to": "review_pending",
+        "session_id": "proc:389c8aab"
+      }
+    },
+    {
+      "time": "2026-10-31T16:38:08.381Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.4.0-stage-01",
+        "from": "review_pending",
+        "to": "review_passed",
+        "session_id": "proc:6b1a697d"
+      }
+    },
+    {
+      "time": "2026-10-31T16:38:12.343Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.4.0-stage-01",
+        "from": "review_passed",
+        "to": "archiving",
+        "session_id": "proc:dde66859"
+      }
+    },
+    {
+      "time": "2026-10-31T16:38:18.257Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.4.0-stage-01",
+        "from": "archiving",
+        "to": "done",
+        "session_id": "proc:4ac2cf06"
+      }
+    }
+  ],
+  "counts": {
+    "stages": 1,
+    "reviews": 0,
+    "log": 8
+  },
+  "schemaVersion": 1,
+  "archived_at": "2026-10-31T16:38:26.180Z"
+}

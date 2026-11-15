@@ -1,2 +1,12 @@
-﻿import './Game/UI/GameLoading/UI_GameLoading';
+import './Game/UI/GameLoading/UI_GameLoading';
 import './Game/UI/GameStart/UI_GameStart';
+import './Game/UI/Test/UI_TestHub';
+import './Game/UI/Test/UI_TestLayer';
+import './Game/UI/Test/UI_TestStack';
+import './Game/UI/Test/UI_TestCard';
+import './Game/UI/Test/UI_TestData';
+import './Game/UI/Test/UI_TestWidgets';
+import './Game/UI/Test/UI_TestConfirm';
+import './Game/UI/Test/UI_TestToast';
+import './Game/UI/Test/UI_TestDebug';
+import './Game/UI/Test/UI_TestBackdrop';

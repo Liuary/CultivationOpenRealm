@@ -41,6 +41,7 @@ public class CORUI : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"Settings",
 				"UMG", 
 				"Json",
 				"JsonUtilities",

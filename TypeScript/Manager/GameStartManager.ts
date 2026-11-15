@@ -1,4 +1,4 @@
-﻿import * as UE from 'ue';
+import * as UE from 'ue';
 import {CORCommonUtil} from 'ue';
 import {$ref, $unref} from "puerts"
 import GameManagerBase from "./GameManagerBase";
@@ -6,7 +6,6 @@ import UIManager from "./UIManager";
 import UISingle from "../Utils/UISingle/UISingle";
 import UI_GameStartSingleType from "../Game/UI/GameStart/UI_GameStartSingleType";
 import GameManager from "./GameManager";
-import * as cpp from "cpp";
 import Log from "../Utils/Log/Log";
 import LogType from "../Utils/Log/LogType";
 import DataManager from './DataManager';
@@ -41,9 +40,6 @@ class GameStartManager extends GameManagerBase {
     private ImageList: any[] = [];
     /** 文本路径 */
     private TextList: string[] = [];
-
-    /** 游戏启动的资产表格软路径 */
-    private GameStartAssetTableSoftPath: cpp.CORSoftObjectPath;
     //#endregion 属性
 
 
@@ -53,8 +49,6 @@ class GameStartManager extends GameManagerBase {
 
         super.Init();
 
-        this.GameStartAssetTableSoftPath = cpp.CORSoftObjectPath.MakeSoftObjectPath(GameStartAssetTablePath);
-        
         this.LoadImageList();
     }
     
@@ -75,15 +69,12 @@ class GameStartManager extends GameManagerBase {
     
     LoadImageList(): void {
         // Log.Log(LogType.UI, 'LoadImageList');
-        
-        let TableSoftPath = cpp.CORSoftObjectPath.MakeSoftObjectPath(GameStartAssetTablePath);
-        let Table = TableSoftPath.Load() as UE.DataTable;
-        if (!Table) {
-            Log.Error(LogType.UI, 'LoadImageList failed.');
+
+        // 走 DataManager 的统一加载路径（加载 + 缓存 + data:table-cached 事件）
+        if (!DataManager.Instance.LoadTableByPath(GameStartAssetTablePath, GameStartAssetTableCacheKey)) {
+            Log.Error(LogType.UI, 'LoadImageList failed: table load error.');
             return;
         }
-
-        DataManager.Instance.CacheTable(GameStartAssetTableCacheKey, Table);
 
         this.ImageList = [];
         this.TextList = [];

@@ -2,8 +2,8 @@
   "FileVersion": 3,
   "FriendlyName": "puer.ts",
   "Version": 1,
-  "VersionName": "1.0.5",
-  "FriendlyVersion": "1.0.5",
+  "VersionName": "1.0.9-master.20261022",
+  "FriendlyVersion": "1.0.9-master.20261022",
   "Description": "Javascript Runtime for unreal engine",
   "Category": "Programming",
   "CreatedBy": "Tencent Corporation",
@@ -48,3 +48,4 @@
     }
   ]
 }
+

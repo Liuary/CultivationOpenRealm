@@ -1,0 +1,265 @@
+{
+  "meta": {
+    "version": "1.0",
+    "project": "OpenFeel",
+    "updated": "2026-10-31T06:28:06.022Z",
+    "revision": 19
+  },
+  "pipeline": {
+    "phase": "active",
+    "current": {
+      "stage": "v1.1.0-stage-01",
+      "op": ""
+    },
+    "retry": 0
+  },
+  "stages": {
+    "v1.1.0-stage-01": {
+      "name": "v1.1.0-stage-01",
+      "phase": "review_passed",
+      "status": "review_passed",
+      "deps": [],
+      "ops": {},
+      "workflow_mode": "fast",
+      "requirement_id": "REQ-001",
+      "stats": {
+        "start_time": "2026-10-31T06:21:09.239Z",
+        "end_time": "",
+        "duration_ms": 0
+      }
+    },
+    "v1.1.0-stage-02": {
+      "name": "v1.1.0-stage-02",
+      "phase": "review_passed",
+      "status": "planned",
+      "deps": [],
+      "ops": {},
+      "workflow_mode": "fast",
+      "requirement_id": "REQ-001",
+      "stats": {
+        "start_time": "2026-10-31T06:21:10.237Z",
+        "end_time": "",
+        "duration_ms": 0
+      }
+    }
+  },
+  "reviews": [
+    {
+      "id": "REV-001",
+      "op": "v1.1.0-stage-01",
+      "stage": "v1.1.0-stage-01",
+      "status": "open",
+      "priority": "medium",
+      "title": "本机无 UE 5.5.4，编译与 PIE 运行验证未执行",
+      "filed_by": "cli",
+      "filed_at": "2026-10-31T06:27:42.954Z",
+      "canAutoFix": false,
+      "blocking": false
+    },
+    {
+      "id": "REV-002",
+      "op": "v1.1.0-stage-01",
+      "stage": "v1.1.0-stage-01",
+      "status": "open",
+      "priority": "medium",
+      "title": "ue.d.ts/ue_bp.d.ts 仍为 1.0.8 生成物，需重跑 Puerts 声明生成",
+      "filed_by": "cli",
+      "filed_at": "2026-10-31T06:27:43.466Z",
+      "canAutoFix": false,
+      "blocking": false
+    },
+    {
+      "id": "REV-003",
+      "op": "v1.1.0-stage-02",
+      "stage": "v1.1.0-stage-02",
+      "status": "open",
+      "priority": "medium",
+      "title": "FullScreen bPopSelf=false 的 TargetIndex=+2 语义按原实现保留，待确认是否为历史笔误",
+      "filed_by": "cli",
+      "filed_at": "2026-10-31T06:27:43.946Z",
+      "canAutoFix": false,
+      "blocking": false
+    },
+    {
+      "id": "REV-004",
+      "op": "v1.1.0-stage-02",
+      "stage": "v1.1.0-stage-02",
+      "status": "open",
+      "priority": "medium",
+      "title": "Release 触发 NativeDestruct/JS Destruct 时同步重入 PushUI 的极端风险",
+      "filed_by": "cli",
+      "filed_at": "2026-10-31T06:27:44.407Z",
+      "canAutoFix": false,
+      "blocking": false
+    }
+  ],
+  "log": [
+    {
+      "time": "2026-10-31T06:15:23.798Z",
+      "agent": "cli",
+      "action": "requirement_add",
+      "detail": {
+        "id": "REQ-001",
+        "title": "升级 Puerts 到 Unreal_v1.0.9 并修复 CORUI 控件 RemoveFromParent 不析构"
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:24.296Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.1.0-stage-01",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:24.785Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.1.0-stage-02",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:27.934Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.1.0-stage-01",
+        "requirementId": "REQ-001"
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:28.403Z",
+      "agent": "cli",
+      "action": "requirement_link",
+      "detail": {
+        "stage": "v1.1.0-stage-02",
+        "requirementId": "REQ-001"
+      }
+    },
+    {
+      "time": "2026-10-31T06:15:30.844Z",
+      "agent": "cli",
+      "action": "requirement_status",
+      "detail": {
+        "id": "REQ-001",
+        "from": "draft",
+        "to": "scheduled"
+      }
+    },
+    {
+      "time": "2026-10-31T06:21:09.234Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.1.0-stage-01",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:92f16c4f"
+      }
+    },
+    {
+      "time": "2026-10-31T06:21:10.230Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.1.0-stage-02",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:134469ea"
+      }
+    },
+    {
+      "time": "2026-10-31T06:22:32.131Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.1.0-stage-01",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:b6131c05"
+      }
+    },
+    {
+      "time": "2026-10-31T06:22:33.118Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.1.0-stage-02",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:590ad294"
+      }
+    },
+    {
+      "time": "2026-10-31T06:22:41.662Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.1.0-stage-02",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:c371c130"
+      }
+    },
+    {
+      "time": "2026-10-31T06:23:03.384Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.1.0-stage-01",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:267abdd5"
+      }
+    },
+    {
+      "time": "2026-10-31T06:25:28.139Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.1.0-stage-01",
+        "from": "exec_running",
+        "to": "review_pending",
+        "session_id": "proc:d2bc7bc8"
+      }
+    },
+    {
+      "time": "2026-10-31T06:26:54.379Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.1.0-stage-02",
+        "from": "exec_running",
+        "to": "review_pending",
+        "session_id": "proc:1c267412"
+      }
+    },
+    {
+      "time": "2026-10-31T06:28:06.016Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.1.0-stage-01",
+        "from": "review_pending",
+        "to": "review_passed",
+        "session_id": "proc:1fc727b1"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "升级 Puerts 到 Unreal_v1.0.9 并修复 CORUI 控件 RemoveFromParent 不析构",
+      "status": "scheduled",
+      "created_at": "2026-10-31T06:15:23.798Z",
+      "updated_at": "2026-10-31T06:15:30.844Z",
+      "target_version": "v1.1.0",
+      "priority": "P0",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-001.md"
+    }
+  ]
+}

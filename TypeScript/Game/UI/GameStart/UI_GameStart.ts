@@ -1,4 +1,4 @@
-﻿// PuertsMixinGenerator_Auto_Generator_Flag
+// PuertsMixinGenerator_Auto_Generator_Flag
 import * as UE from 'ue';
 import * as cpp from "cpp";
 import { blueprint, toDelegate } from 'puerts';
@@ -41,7 +41,9 @@ class UI_GameStart {
 	}
 
 	OnScriptInit(Single: UISingle) {
-		this.ImgPathList = Single.GetSingle<string[]>(Number(UI_GameStartSingleType.ImageList));
+		// 载荷可能为空（调用方未提供数据）：用空载荷兜底，避免直接解引用
+		const Payload = Single ?? new UISingle();
+		this.ImgPathList = Payload.GetSingle<string[]>(Number(UI_GameStartSingleType.ImageList));
 
 		this.Start();
 	}
@@ -53,15 +55,16 @@ class UI_GameStart {
 	}
 	//#endregion UI 生命周期
 
-	private ImgPathList: string[] = null;
-	private TextList: string[] = null;
+	private ImgPathList: string[] | null = null;
+	private TextList: string[] | null = null;
 
 	private SetStartImg(ImgPath: string) {
 		this.Img_Start.SetImagePath(ImgPath);
 	}
 
 	private Start() {
-		if (!this.ImgPathList || this.ImgPathList.length == 0) {
+		const ImgPathList = this.ImgPathList;
+		if (!ImgPathList || ImgPathList.length === 0) {
 			Log.Log(LogType.UI, `[UI_GameStart][Start] ImgPathList is null or empty.`);
 			this.CloseUI();
 			GameLoadingManager.Instance.LoadingGame();
@@ -69,7 +72,10 @@ class UI_GameStart {
 		}
 		
 		// 获取首个图片，并移除
-		let ImgPath = this.ImgPathList.shift();
+		const ImgPath = ImgPathList.shift();
+		if (!ImgPath) {
+			return;
+		}
 		this.SetStartImg(ImgPath);
 
 		this.PlayAnimation(this.Ani_FadeIn, 0, 1, UE.EUMGSequencePlayMode.Forward, 1, false);

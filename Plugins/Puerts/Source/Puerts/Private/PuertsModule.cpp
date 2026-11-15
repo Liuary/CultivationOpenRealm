@@ -1,6 +1,6 @@
 /*
  * Tencent is pleased to support the open source community by making Puerts available.
- * Copyright (C) 2020 THL A29 Limited, a Tencent company.  All rights reserved.
+ * Copyright (C) 2020 Tencent.  All rights reserved.
  * Puerts is licensed under the BSD 3-Clause License, except for the third-party components listed in the file 'LICENSE' which may
  * be subject to their corresponding license terms. This file is subject to the terms and conditions defined in file 'LICENSE',
  * which is part of this source code package.
@@ -56,6 +56,7 @@ public:
 
     void PreBeginPIE(bool bIsSimulating);
     void EndPIE(bool bIsSimulating);
+    void EndPlayMap();
     bool HandleSettingsSaved();
 #endif
 
@@ -315,38 +316,46 @@ void FPuertsModule::PreBeginPIE(bool bIsSimulating)
 }
 void FPuertsModule::EndPIE(bool bIsSimulating)
 {
+    // UEditorEngine broadcasts EndPIE before TeardownPlaySession starts cleaning up play worlds.
+    // Keep the environment alive so JavaScript teardown can run during World and GameInstance deinitialization.
     bIsInPIE = false;
-    if (Enabled)
+}
+void FPuertsModule::EndPlayMap()
+{
+    if (!Enabled)
     {
-        JsEnv.Reset();
-        for (TObjectIterator<UClass> It; It; ++It)
+        return;
+    }
+
+    JsEnv.Reset();
+    JsEnvGroup.Reset();
+    for (TObjectIterator<UClass> It; It; ++It)
+    {
+        UClass* Class = *It;
+        if (auto TsClass = Cast<UTypeScriptGeneratedClass>(Class))
         {
-            UClass* Class = *It;
-            if (auto TsClass = Cast<UTypeScriptGeneratedClass>(Class))
+            TsClass->CancelRedirection();
+            TsClass->DynamicInvoker.Reset();
+        }
+        if (Class->ClassConstructor == UTypeScriptGeneratedClass::StaticConstructor)
+        {
+            auto SuperClass = Class->GetSuperClass();
+            while (SuperClass)
             {
-                TsClass->CancelRedirection();
-                TsClass->DynamicInvoker.Reset();
+                if (SuperClass->ClassConstructor != UTypeScriptGeneratedClass::StaticConstructor)
+                {
+                    Class->ClassConstructor = SuperClass->ClassConstructor;
+                    break;
+                }
+                SuperClass = SuperClass->GetSuperClass();
             }
             if (Class->ClassConstructor == UTypeScriptGeneratedClass::StaticConstructor)
             {
-                auto SuperClass = Class->GetSuperClass();
-                while (SuperClass)
-                {
-                    if (SuperClass->ClassConstructor != UTypeScriptGeneratedClass::StaticConstructor)
-                    {
-                        Class->ClassConstructor = SuperClass->ClassConstructor;
-                        break;
-                    }
-                    SuperClass = SuperClass->GetSuperClass();
-                }
-                if (Class->ClassConstructor == UTypeScriptGeneratedClass::StaticConstructor)
-                {
-                    Class->ClassConstructor = nullptr;
-                }
+                Class->ClassConstructor = nullptr;
             }
         }
-        UE_LOG(PuertsModule, Display, TEXT("JsEnv reset"));
     }
+    UE_LOG(PuertsModule, Display, TEXT("JsEnv reset after play worlds cleaned up"));
 }
 #endif
 
@@ -414,6 +423,7 @@ void FPuertsModule::StartupModule()
     {
         FEditorDelegates::PreBeginPIE.AddRaw(this, &FPuertsModule::PreBeginPIE);
         FEditorDelegates::EndPIE.AddRaw(this, &FPuertsModule::EndPIE);
+        FGameDelegates::Get().GetEndPlayMapDelegate().AddRaw(this, &FPuertsModule::EndPlayMap);
 
         // FEditorSupportDelegates::CleanseEditor.AddRaw(this, &FPuertsModule::CleanseEditor);
         // FLevelEditorModule& LevelEditor = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
@@ -454,6 +464,10 @@ void FPuertsModule::Enable()
 {
     Enabled = true;
 
+    // 在MakeSharedJsEnv->RebindJs->load js 可能会有逻辑触发对象加载, 例如直接LoadClass
+    // AddUObjectCreateListener逻辑在rebindjs后则可能导致Inject缺漏导致 部分重写方法报错漏调用
+    GUObjectArray.AddUObjectCreateListener(static_cast<FUObjectArray::FUObjectCreateListener*>(this));
+    GUObjectArray.AddUObjectDeleteListener(static_cast<FUObjectArray::FUObjectDeleteListener*>(this));
 #if WITH_EDITOR
     if (IsRunningGame())
     {
@@ -463,9 +477,6 @@ void FPuertsModule::Enable()
 #else
     MakeSharedJsEnv();
 #endif
-
-    GUObjectArray.AddUObjectCreateListener(static_cast<FUObjectArray::FUObjectCreateListener*>(this));
-    GUObjectArray.AddUObjectDeleteListener(static_cast<FUObjectArray::FUObjectDeleteListener*>(this));
 }
 
 void FPuertsModule::Disable()
@@ -501,6 +512,7 @@ void FPuertsModule::ShutdownModule()
 {
 #if WITH_EDITOR
     UnregisterSettings();
+    FGameDelegates::Get().GetEndPlayMapDelegate().RemoveAll(this);
     if (FLevelEditorModule* LevelEditor = FModuleManager::GetModulePtr<FLevelEditorModule>("LevelEditor"))
     {
         LevelEditor->OnMapChanged().RemoveAll(this);

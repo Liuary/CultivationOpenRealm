@@ -1,6 +1,6 @@
 /*
 * Tencent is pleased to support the open source community by making Puerts available.
-* Copyright (C) 2020 THL A29 Limited, a Tencent company.  All rights reserved.
+* Copyright (C) 2020 Tencent.  All rights reserved.
 * Puerts is licensed under the BSD 3-Clause License, except for the third-party components listed in the file 'LICENSE' which may be subject to their corresponding license terms.
 * This file is subject to the terms and conditions defined in file 'LICENSE', which is part of this source code package.
 */
@@ -17,7 +17,6 @@ public class JsEnv : ModuleRules
         VDeprecated, // for 4.24 or blow only
         V8_4_371_19,
         V9_4_146_24,
-        V10_6_194,
         V11_8_172
     }
 
@@ -76,7 +75,12 @@ public class JsEnv : ModuleRules
             PublicDependencyModuleNames.Add("OpenSSL");
         }
 
+
+#if UE_5_6_OR_LATER
+        CppCompileWarningSettings.ShadowVariableWarningLevel = WarningLevel.Warning;
+#else
         ShadowVariableWarningLevel = WarningLevel.Warning;
+#endif
 
         if (!FTextAsString)
         {
@@ -417,10 +421,6 @@ public class JsEnv : ModuleRules
         {
             v8LibSuffix = "_9.4.146.24";
         }
-        else if (UseV8Version == SupportedV8Versions.V10_6_194)
-        {
-            v8LibSuffix = "_10.6.194";
-        }
         else if (UseV8Version == SupportedV8Versions.V11_8_172)
         {
 #if !UE_5_0_OR_LATER
@@ -525,20 +525,20 @@ public class JsEnv : ModuleRules
         else if (Target.Platform == UnrealTargetPlatform.Android)
         {
             /*
-            #if UE_4_19_OR_LATER
+#if UE_4_19_OR_LATER
                         AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(ModuleDirectory, "..", "..", "ThirdParty", "Libnode_APL.xml"));
-            #else
+#else
                         AdditionalPropertiesForReceipt.Add(new ReceiptProperty("AndroidPlugin", Path.Combine(ModuleDirectory, "..", "..", "ThirdParty", "Libnode_APL.xml")));
-            #endif
-            #if UE_4_24_OR_LATER
+#endif
+#if UE_4_24_OR_LATER
                         PublicSystemLibraryPaths.Add(Path.Combine(LibraryPath, "Android", "armeabi-v7a"));
                         PublicSystemLibraryPaths.Add(Path.Combine(LibraryPath, "Android", "arm64-v8a"));
                         PublicSystemLibraries.Add("node");
-            #else
+#else
                         PublicLibraryPaths.Add(Path.Combine(LibraryPath, "Android", "armeabi-v7a"));
                         PublicLibraryPaths.Add(Path.Combine(LibraryPath, "Android", "arm64-v8a"));
                         PublicAdditionalLibraries.Add("node");
-            #endif  //UE_4_24_OR_LATER
+#endif  //UE_4_24_OR_LATER
             */
             
             string[] Archs = new string[] { "armeabi-v7a", "arm64-v8a" };
@@ -572,6 +572,12 @@ public class JsEnv : ModuleRules
         else if (Target.Platform == UnrealTargetPlatform.Mac)
         {
             string V8LibraryPath = Path.Combine(LibraryPath, "macOS");
+#if UE_5_2_OR_LATER
+            if (Target.Architecture == UnrealArch.Arm64)
+            {
+                V8LibraryPath = Path.Combine(LibraryPath, "macOS_arm64");
+            }
+#endif
             if (Node16)
             {
                 PublicAdditionalLibraries.Add(Path.Combine(V8LibraryPath, "libnode.93.dylib"));

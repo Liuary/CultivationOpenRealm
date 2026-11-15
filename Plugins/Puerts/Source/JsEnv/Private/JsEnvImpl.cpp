@@ -1,6 +1,6 @@
 /*
  * Tencent is pleased to support the open source community by making Puerts available.
- * Copyright (C) 2020 THL A29 Limited, a Tencent company.  All rights reserved.
+ * Copyright (C) 2020 Tencent.  All rights reserved.
  * Puerts is licensed under the BSD 3-Clause License, except for the third-party components listed in the file 'LICENSE' which may
  * be subject to their corresponding license terms. This file is subject to the terms and conditions defined in file 'LICENSE',
  * which is part of this source code package.
@@ -15,12 +15,12 @@
 #include "DelegateWrapper.h"
 #include "ContainerWrapper.h"
 #include "SoftObjectWrapper.h"
+#include "WeakObjectPtrWrapper.h"
 #include "V8Utils.h"
 #include "ObjectMapper.h"
 #include "JSLogger.h"
 #if !defined(ENGINE_INDEPENDENT_JSENV)
 #include "JSGeneratedClass.h"
-#include "JSAnimGeneratedClass.h"
 #include "JSWidgetGeneratedClass.h"
 #include "JSGeneratedFunction.h"
 #endif
@@ -459,11 +459,14 @@ FJsEnvImpl::FJsEnvImpl(std::shared_ptr<IJSModuleLoader> InModuleLoader, std::sha
 
     v8::Context::Scope ContextScope(Context);
 
+    v8::Local<v8::Object> Global = Context->Global();
 #if defined(WITH_NODEJS)
+    auto strConsole = v8::String::NewFromUtf8(Isolate, "console").ToLocalChecked();
+    v8::Local<v8::Value> Console = Global->Get(Context, strConsole).ToLocalChecked();
     // kDefaultFlags = kOwnsProcessState | kOwnsInspector, if kOwnsInspector set, inspector_agent.cc:681
     // CHECK_EQ(start_io_thread_async_initialized.exchange(true), false) fail!
     NodeEnv = CreateEnvironment(NodeIsolateData, Context, Args, ExecArgs, node::EnvironmentFlags::kOwnsProcessState);
-
+    Global->Set(Context, strConsole, Console).Check();
     v8::MaybeLocal<v8::Value> LoadenvRet = node::LoadEnvironment(NodeEnv,
         "const publicRequire ="
         "  require('module').createRequire(process.cwd() + '/');"
@@ -479,9 +482,6 @@ FJsEnvImpl::FJsEnvImpl(std::shared_ptr<IJSModuleLoader> InModuleLoader, std::sha
 
     StartPolling();
 #endif
-
-    v8::Local<v8::Object> Global = Context->Global();
-
     v8::Local<v8::Object> PuertsObj = v8::Object::New(Isolate);
     Global->Set(Context, FV8Utils::InternalString(Isolate, "puerts"), PuertsObj).Check();
 
@@ -515,6 +515,8 @@ FJsEnvImpl::FJsEnvImpl(std::shared_ptr<IJSModuleLoader> InModuleLoader, std::sha
     MethodBindingHelper<&FJsEnvImpl::SetJsTakeRefInTs>::Bind(Isolate, Context, Global, "__tgjsSetJsTakeRef", This);
 
     MethodBindingHelper<&FJsEnvImpl::NewStructByScriptStruct>::Bind(Isolate, Context, Global, "__tgjsNewStruct", This);
+
+    MethodBindingHelper<&FJsEnvImpl::MakeWeakObjectPtr>::Bind(Isolate, Context, Global, "__tgjsMakeWeakObjectPtr", This);
 
 #if !defined(ENGINE_INDEPENDENT_JSENV)
     MethodBindingHelper<&FJsEnvImpl::MakeUClass>::Bind(Isolate, Context, Global, "__tgjsMakeUClass", This);
@@ -558,7 +560,7 @@ FJsEnvImpl::FJsEnvImpl(std::shared_ptr<IJSModuleLoader> InModuleLoader, std::sha
 #endif
 
     MethodBindingHelper<&FJsEnvImpl::DumpStatisticsLog>::Bind(Isolate, Context, Global, "dumpStatisticsLog", This);
-
+    MethodBindingHelper<&FJsEnvImpl::IsQuickJS>::Bind(Isolate, Context, Global, "isQuickJS", This);
     Global
         ->Set(Context, FV8Utils::ToV8String(Isolate, "__tgjsFNameToArrayBuffer"),
             v8::FunctionTemplate::New(Isolate, FNameToArrayBuffer)->GetFunction(Context).ToLocalChecked())
@@ -610,6 +612,8 @@ FJsEnvImpl::FJsEnvImpl(std::shared_ptr<IJSModuleLoader> InModuleLoader, std::sha
         v8::UniquePersistent<v8::FunctionTemplate>(Isolate, FMulticastDelegateWrapper::ToFunctionTemplate(Isolate));
 
     SoftObjectPtrTemplate = v8::UniquePersistent<v8::FunctionTemplate>(Isolate, FSoftObjectWrapper::ToFunctionTemplate(Isolate));
+
+    WeakObjectPtrTemplate = v8::UniquePersistent<v8::FunctionTemplate>(Isolate, FWeakObjectPtrWrapper::ToFunctionTemplate(Isolate));
 
     DynamicInvoker = MakeShared<DynamicInvokerImpl, ESPMode::ThreadSafe>(this);
     MixinInvoker = DynamicInvoker;
@@ -843,13 +847,6 @@ FJsEnvImpl::~FJsEnvImpl()
                     JSWidgetGeneratedClass->Release();
                 }
             }
-            else if (auto JSAnimGeneratedClass = Cast<UJSAnimGeneratedClass>(GeneratedClass))
-            {
-                if (JSWidgetGeneratedClass->IsValidLowLevelFast() && !UEObjectIsPendingKill(JSWidgetGeneratedClass))
-                {
-                    JSAnimGeneratedClass->Release();
-                }
-            }
         }
 #endif
 
@@ -878,6 +875,7 @@ FJsEnvImpl::~FJsEnvImpl()
         DynamicInvoker.Reset();
         MixinInvoker.Reset();
 
+        WeakObjectPtrTemplate.Reset();
         SoftObjectPtrTemplate.Reset();
         MulticastDelegateTemplate.Reset();
         DelegateTemplate.Reset();
@@ -1150,6 +1148,39 @@ void FJsEnvImpl::NewStructByScriptStruct(const v8::FunctionCallbackInfo<v8::Valu
     {
         FV8Utils::ThrowException(Isolate, "invalid argument");
     }
+}
+
+void FJsEnvImpl::MakeWeakObjectPtr(const v8::FunctionCallbackInfo<v8::Value>& Info)
+{
+    v8::Isolate* Isolate = Info.GetIsolate();
+    v8::Isolate::Scope IsolateScope(Isolate);
+    v8::HandleScope HandleScope(Isolate);
+    v8::Local<v8::Context> Context = Isolate->GetCurrentContext();
+    v8::Context::Scope ContextScope(Context);
+
+    UObject* Object = reinterpret_cast<UObject*>(FV8Utils::GetPointer(Context, Info[0]));
+    if (FV8Utils::IsReleasedPtr(Object))
+    {
+        Object = nullptr;
+    }
+
+    TWeakObjectPtr<UObject>* WeakPtr = new TWeakObjectPtr<UObject>(Object);
+
+    const auto JSObject = WeakObjectPtrTemplate.Get(Isolate)->InstanceTemplate()->NewInstance(Context).ToLocalChecked();
+    DataTransfer::SetPointer(Isolate, JSObject, WeakPtr, 0);
+
+    v8::Global<v8::Object>* GlobalPtr = new v8::Global<v8::Object>(Isolate, JSObject);
+    GlobalPtr->SetWeak<v8::Global<v8::Object>>(
+        GlobalPtr,
+        [](const v8::WeakCallbackInfo<v8::Global<v8::Object>>& Data)
+        {
+            void* Ptr = DataTransfer::MakeAddressWithHighPartOfTwo(Data.GetInternalField(0), Data.GetInternalField(1));
+            delete static_cast<TWeakObjectPtr<UObject>*>(Ptr);
+            delete Data.GetParameter();
+        },
+        v8::WeakCallbackType::kInternalFields);
+
+    Info.GetReturnValue().Set(JSObject);
 }
 
 bool FJsEnvImpl::IdleNotificationDeadline(double DeadlineInSeconds)
@@ -2184,7 +2215,11 @@ static void SkipFunction(FFrame& Stack, RESULT_DECL, UFunction* Function)
     if (ReturnProp != NULL)
     {
         ReturnProp->DestroyValue(RESULT_PARAM);
+#if ENGINE_MINOR_VERSION >= 5 && ENGINE_MAJOR_VERSION >= 5
+        FMemory::Memzero(RESULT_PARAM, ReturnProp->ArrayDim * ReturnProp->GetElementSize());
+#else
         FMemory::Memzero(RESULT_PARAM, ReturnProp->ArrayDim * ReturnProp->ElementSize);
+#endif
     }
 }
 
@@ -2401,7 +2436,13 @@ void FJsEnvImpl::ExecuteDelegate(
     {
         JsCallbackPrototypeMap[SignatureFunction]->Call(Isolate, Context, Info,
             [MulticastScriptDelegate = static_cast<FMulticastScriptDelegate*>(DelegatePtr)](void* Params)
-            { MulticastScriptDelegate->ProcessMulticastDelegate<UObject>(Params); });
+            {
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 8
+                MulticastScriptDelegate->ProcessDelegate<UObject>(Params);
+#else
+                MulticastScriptDelegate->ProcessMulticastDelegate<UObject>(Params);
+#endif
+            });
     }
 }
 
@@ -2840,7 +2881,8 @@ v8::Local<v8::Value> FJsEnvImpl::FindOrAddContainer(
     check(Ptr);    // must not null
 
     auto PersistentValuePtr = ContainerCache.Find(Ptr);
-    if (PersistentValuePtr)
+    if (PersistentValuePtr && PersistentValuePtr->Type == EArray && PersistentValuePtr->KeyProperty == Property &&
+        PersistentValuePtr->ValueProperty == nullptr)
     {
         return PersistentValuePtr->Container.Get(Isolate);
     }
@@ -2848,7 +2890,7 @@ v8::Local<v8::Value> FJsEnvImpl::FindOrAddContainer(
     auto Result = ArrayTemplate.Get(Isolate)->InstanceTemplate()->NewInstance(Context).ToLocalChecked();
     BindContainer(Ptr, Result,
         PassByPointer ? FScriptArrayWrapper::OnGarbageCollected : FScriptArrayWrapper::OnGarbageCollectedWithFree, PassByPointer,
-        EArray);
+        EArray, Property, nullptr);
     DataTransfer::SetPointer(Isolate, Result, GetContainerPropertyTranslator(Property), 1);
     return Result;
 }
@@ -2859,14 +2901,16 @@ v8::Local<v8::Value> FJsEnvImpl::FindOrAddContainer(
     check(Ptr);    // must not null
 
     auto PersistentValuePtr = ContainerCache.Find(Ptr);
-    if (PersistentValuePtr)
+    if (PersistentValuePtr && PersistentValuePtr->Type == ESet && PersistentValuePtr->KeyProperty == Property &&
+        PersistentValuePtr->ValueProperty == nullptr)
     {
         return PersistentValuePtr->Container.Get(Isolate);
     }
 
     auto Result = SetTemplate.Get(Isolate)->InstanceTemplate()->NewInstance(Context).ToLocalChecked();
     BindContainer(Ptr, Result,
-        PassByPointer ? FScriptSetWrapper::OnGarbageCollected : FScriptSetWrapper::OnGarbageCollectedWithFree, PassByPointer, ESet);
+        PassByPointer ? FScriptSetWrapper::OnGarbageCollected : FScriptSetWrapper::OnGarbageCollectedWithFree, PassByPointer, ESet,
+        Property, nullptr);
     DataTransfer::SetPointer(Isolate, Result, GetContainerPropertyTranslator(Property), 1);
     return Result;
 }
@@ -2877,14 +2921,16 @@ v8::Local<v8::Value> FJsEnvImpl::FindOrAddContainer(v8::Isolate* Isolate, v8::Lo
     check(Ptr);    // must not null
 
     auto PersistentValuePtr = ContainerCache.Find(Ptr);
-    if (PersistentValuePtr)
+    if (PersistentValuePtr && PersistentValuePtr->Type == EMap && PersistentValuePtr->KeyProperty == KeyProperty &&
+        PersistentValuePtr->ValueProperty == ValueProperty)
     {
         return PersistentValuePtr->Container.Get(Isolate);
     }
 
     auto Result = MapTemplate.Get(Isolate)->InstanceTemplate()->NewInstance(Context).ToLocalChecked();
     BindContainer(Ptr, Result,
-        PassByPointer ? FScriptMapWrapper::OnGarbageCollected : FScriptMapWrapper::OnGarbageCollectedWithFree, PassByPointer, EMap);
+        PassByPointer ? FScriptMapWrapper::OnGarbageCollected : FScriptMapWrapper::OnGarbageCollectedWithFree, PassByPointer, EMap,
+        KeyProperty, ValueProperty);
     DataTransfer::SetPointer(Isolate, Result, GetContainerPropertyTranslator(KeyProperty), 1);
     DataTransfer::SetPointer(Isolate, Result, GetContainerPropertyTranslator(ValueProperty), 2);
     return Result;
@@ -3011,11 +3057,11 @@ void FJsEnvImpl::UnBindCppObject(v8::Isolate* Isolate, JSClassDefinition* ClassD
 }
 
 void FJsEnvImpl::BindContainer(void* Ptr, v8::Local<v8::Object> JSObject, void (*Callback)(const v8::WeakCallbackInfo<void>& data),
-    bool PassByPointer, ContainerType Type)
+    bool PassByPointer, ContainerType Type, PropertyMacro* KeyProperty, PropertyMacro* ValueProperty)
 {
     DataTransfer::SetPointer(MainIsolate, JSObject, Ptr, 0);
-    ContainerCacheItem& Val =
-        ContainerCache.Add(Ptr, {v8::UniquePersistent<v8::Value>(MainIsolate, JSObject), !PassByPointer, Type});
+    ContainerCacheItem& Val = ContainerCache.Add(
+        Ptr, {v8::UniquePersistent<v8::Value>(MainIsolate, JSObject), !PassByPointer, Type, KeyProperty, ValueProperty});
     Val.Container.SetWeak<void>(nullptr, Callback, v8::WeakCallbackType::kInternalFields);
 }
 
@@ -4006,6 +4052,14 @@ void FJsEnvImpl::EvalScript(const v8::FunctionCallbackInfo<v8::Value>& Info)
                     Puerts, Warning, TEXT("FlagHash not match expect %u, but got %u"), Expect_FlagHash, CodeCacheHeader->FlagHash);
                 CodeCacheHeader->FlagHash = Expect_FlagHash;
             }
+#if V8_MAJOR_VERSION >= 11
+            if (CodeCacheHeader->ReadOnlySnapshotChecksum != Expect_ReadOnlySnapshotChecksum)
+            {
+                UE_LOG(Puerts, Warning, TEXT("ReadOnlySnapshotChecksum not match expect %u, but got %u"),
+                    Expect_ReadOnlySnapshotChecksum, CodeCacheHeader->ReadOnlySnapshotChecksum);
+                CodeCacheHeader->ReadOnlySnapshotChecksum = Expect_ReadOnlySnapshotChecksum;
+            }
+#endif
         }
     }
 
@@ -4245,6 +4299,15 @@ void FJsEnvImpl::SetInterval(const v8::FunctionCallbackInfo<v8::Value>& Info)
     SetFTickerDelegate(Info, true);
 }
 
+void FJsEnvImpl::IsQuickJS(const v8::FunctionCallbackInfo<v8::Value>& Info)
+{
+#ifdef WITH_QUICKJS
+    Info.GetReturnValue().Set(v8::Boolean::New(Info.GetIsolate(), true));
+#else
+    Info.GetReturnValue().Set(v8::Boolean::New(Info.GetIsolate(), false));
+#endif
+}
+
 #if !defined(ENGINE_INDEPENDENT_JSENV)
 void FJsEnvImpl::MakeUClass(const v8::FunctionCallbackInfo<v8::Value>& Info)
 {
@@ -4433,11 +4496,7 @@ void FJsEnvImpl::Mixin(const v8::FunctionCallbackInfo<v8::Value>& Info)
         New->StaticLink(true);
 
         auto CDO = New->GetDefaultObject();
-        if (auto AnimClass = Cast<UAnimBlueprintGeneratedClass>(New))
-        {
-            AnimClass->UpdateCustomPropertyListForPostConstruction();
-        }
-        else if (auto WidgetClass = Cast<UWidgetBlueprintGeneratedClass>(New))
+        if (auto WidgetClass = Cast<UWidgetBlueprintGeneratedClass>(New))
         {
             WidgetClass->UpdateCustomPropertyListForPostConstruction();
         }

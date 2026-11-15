@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -74,6 +74,9 @@ public:
 	// 修改界面命名
 	UFUNCTION(BlueprintCallable, Category = "COR")
 	void SetWindowName(FName InWindowName) { WindowName = InWindowName; }
+
+	// 获取自身在父面板中的 Slot（容器复用一个已注册窗口时用来复用布局）
+	UPanelSlot* GetOwningSlot() const { return Slot; }
 
 	// 窗口被覆盖（允许蓝图重写）
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "COR")

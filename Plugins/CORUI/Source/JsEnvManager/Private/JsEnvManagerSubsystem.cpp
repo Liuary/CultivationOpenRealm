@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "JsEnvManagerSubsystem.h"
@@ -21,6 +21,15 @@ void UJsEnvManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void UJsEnvManagerSubsystem::Deinitialize()
 {
+	// 统一关闭边界：先让 UI 在 JS 仍存活时关闭窗口，再销毁 JS 环境
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		if (UCORUIManager* UIManager = GameInstance->GetSubsystem<UCORUIManager>())
+		{
+			UIManager->ShutdownUI();
+		}
+	}
+
 	// 关闭JS环境
 	JsEnv.Reset();
 	
@@ -35,8 +44,20 @@ TSharedPtr<puerts::FJsEnv> UJsEnvManagerSubsystem::GetJsEnv()
 	return JsEnv;
 }
 
+bool UJsEnvManagerSubsystem::IsJsEnvStarted() const
+{
+	return JsEnv.IsValid();
+}
+
 void UJsEnvManagerSubsystem::StartJsEnv()
 {
+	// 幂等：重复的世界/GameMode 初始化不再替换已有环境（替换会让旧 UI 回调落空）
+	if (JsEnv.IsValid())
+	{
+		UE_LOG(LogTemp, Log, TEXT("UJsEnvManagerSubsystem::StartJsEnv: already started, skip"));
+		return;
+	}
+
 	// 获取设置
 	const UJsEnvManagerSetting* Setting = GetDefault<UJsEnvManagerSetting>();
 
@@ -68,9 +89,10 @@ void UJsEnvManagerSubsystem::StartJsEnv()
 
 void UJsEnvManagerSubsystem::OnJsEnvBeginPlay(AGameModeBase* GameMode)
 {
-	// 世界加载完成后，延迟一帧创建JsEnv
+	// 与 CORUI 的 next-tick InitUI 竞争会丢掉唯一一次 OnUIManagerInit：
+	// 这里同步启动 JS（同步执行 CorStart.Start -> BindCppEvent），UI 的 next-tick 初始化必然晚于事件绑定。
 	if (GameMode && GameMode->GetWorld() == GetWorld())
 	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &ThisClass::StartJsEnv));
+		StartJsEnv();
 	}
 }

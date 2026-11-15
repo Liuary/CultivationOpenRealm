@@ -1,4 +1,4 @@
-﻿#include "Core/AutoRegister/AutoRegister.h"
+#include "Core/AutoRegister/AutoRegister.h"
 
 #include "CORUIManager.h"
 #include "Core/Streamable/CORStreamableManager.h"
@@ -52,6 +52,8 @@ struct CORCommonAutoRegister
 
 		RegisterTArray(CORSoftObjectPath);
 
+		// ReleaseHandle / CancelHandle / ReleaseAll 已是 UFUNCTION，经 UsingUClass 自动暴露，
+		// 不再走 DefineClass.Method（避免重复注册，并让 Puerts.Gen 能生成到声明）
 		puerts::DefineClass<UCORStreamableManager>()
 			.Method("RequestAsyncLoadList", MakeFunction(&UCORStreamableManager::RequestAsyncLoadList))
 			.Method("RequestAsyncLoad", MakeFunction(&UCORStreamableManager::RequestAsyncLoad))

@@ -6,10 +6,45 @@
 
 | 项目 | 说明 |
 |------|------|
-| 引擎 | Unreal Engine 5.5 |
+| 引擎 | Unreal Engine 5.8 |
 | 脚本 | TypeScript (via Puerts / V8) |
 | 目标平台 | Win64 / Android / Mac / iOS / Linux |
 | UI 框架 | CORUI（自研层级化 UI 系统） |
+
+## ⚠️ 首次克隆必读：V8 预编译库不随仓库分发
+
+**克隆后不能直接编译**，必须先补下 Puerts 的 V8 预编译库。
+
+- **缺什么**：`Plugins/Puerts/ThirdParty/v8_9.4.146.24/`（含 `Inc/`、`Lib/`、`Bin/`）
+- **为什么不在仓库里**：这些库体积过大（单个 `wee8.lib` 最大约 188 MB，超过 GitHub 单文件 100 MB 限制），
+  且二进制不适合进版本库，仓库历史已清理
+- **后果**：不补库直接 Generate/Build 会报找不到 V8 库或链接失败
+
+### 下载方式（与当前工程匹配的版本 9.4.146.24）
+
+1. 直链下载：
+
+   https://github.com/puerts/backend-v8/releases/download/V8_9.4.146.24_240430/v8_bin_9.4.146.24.tgz
+
+2. 解压到 `Plugins/Puerts/ThirdParty/`，确保得到：
+
+   ```
+   Plugins/Puerts/ThirdParty/v8_9.4.146.24/{Inc,Lib,Bin}
+   ```
+
+3. 版本必须与 `Plugins/Puerts/Source/JsEnv/JsEnv.build.cs` 里的 `UseV8Version` 一致
+   （当前为 `V9_4_146_24`，工程默认值）。
+
+其他可选方式：
+
+- **Puerts Unreal 发布包**：从 [Puerts Releases](https://github.com/Tencent/puerts/releases)
+  下载对应 UE 版本的 Unreal 发布包，解压到项目 `Plugins/`，包内已含 V8 库
+- **官方安装文档**：https://puerts.github.io/docs/puerts/unreal/install/
+- 其他 V8 版本（8.4.371.19 / 10.6.194 / 11.8.172）见
+  [backend-v8 releases](https://github.com/puerts/backend-v8/releases)，切换后需同步改 `UseV8Version`
+
+> `.gitignore` 已忽略 `Plugins/Puerts/ThirdParty/v8_*/Lib/`、`Bin/` 与 `*.lib` 等二进制，
+> 补进来的库文件不会被误提交。
 
 ## 技术架构
 

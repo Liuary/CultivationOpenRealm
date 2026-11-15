@@ -1,6 +1,6 @@
 ﻿/*
  * Tencent is pleased to support the open source community by making Puerts available.
- * Copyright (C) 2020 THL A29 Limited, a Tencent company.  All rights reserved.
+ * Copyright (C) 2020 Tencent.  All rights reserved.
  * Puerts is licensed under the BSD 3-Clause License, except for the third-party components listed in the file 'LICENSE' which may
  * be subject to their corresponding license terms. This file is subject to the terms and conditions defined in file 'LICENSE',
  * which is part of this source code package.
@@ -783,8 +783,8 @@ pesapi_value pesapi_eval(pesapi_env env, const uint8_t* code, size_t code_size, 
         v8::String::NewFromUtf8(isolate, path == nullptr ? "" : path, v8::NewStringType::kNormal).ToLocalChecked();
     std::vector<char> buff;
     buff.reserve(code_size + 1);
-    memcpy(buff.data(), code, code_size);
-    buff.data()[code_size] = '\0';
+    buff.insert(buff.end(), code, code + code_size);
+    buff.push_back('\0');
     v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, buff.data(), v8::NewStringType::kNormal).ToLocalChecked();
 #if V8_MAJOR_VERSION > 8
     v8::ScriptOrigin origin(isolate, url);

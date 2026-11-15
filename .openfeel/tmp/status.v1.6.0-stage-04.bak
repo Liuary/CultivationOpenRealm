@@ -1,0 +1,39 @@
+# v1.6.0-stage-04 状态
+
+- **执行模式**：manual
+- **自动推进**：enabled
+- **工作流模式**：fast
+- **状态**：review_passed
+- **当前责任 Agent**：openfeel-executor
+- **上一责任 Agent**：openfeel-reviewer
+- **更新时间**：2026-11-04 15:22
+
+## Worktree / Session
+
+- **工作模式**：manual
+- **分支名**：-
+- **Session 名称**：-
+- **合并状态**：not_started
+- **清理策略**：manual
+
+## 当前任务
+
+- [x] 任务1：产出《观澜》UI 测试套件设计稿（视觉规范、界面清单、测试矩阵、实施计划）
+- [x] 任务2：生成统一风格的概念图并交用户确认
+- [x] 任务3：确认后创建 UMG 窗口资产与 TS Mixin
+- [x] 任务4：编写 TestUIManager 并接入启动流程
+- [x] 任务5：编译 TS 并通过 PIE 截图与自检脚本验证
+- [x] 任务6：技术验证：MCP 建 WBP / 设属性 / 编译保存；tsc 基线通过
+- [x] 任务7：视觉反馈整改：按钮边框加粗（低分辨率可见）
+- [x] 任务8：视觉反馈整改：改用常规无衬线字体，取消修仙风格
+- [ ] 任务9：修复 PmgDesignerExtension 两处生命周期崩溃（OnAssetClosed 委托 UAF + Initialize 延迟 lambda 悬空 designer）
+
+## 阻塞 / 暂停原因
+
+无
+
+## 状态记录
+
+| 时间 | Agent | 状态变化 | 说明 |
+|------|-------|----------|------|
+| 2026-11-03 15:49 | user | planned | 阶段已创建 |

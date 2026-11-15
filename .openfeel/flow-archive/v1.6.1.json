@@ -1,0 +1,381 @@
+{
+  "version": "v1.6.1",
+  "stages": {
+    "v1.6.1-stage-05": {
+      "name": "v1.6.1-stage-05",
+      "phase": "done",
+      "status": "done",
+      "deps": [],
+      "ops": {
+        "op-001": {
+          "title": "CORUI 插件只读审查（Codex gpt-6.1-sol）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-001"
+        },
+        "op-002": {
+          "title": "W1 根/池 GC 所有权（F1）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-002"
+        },
+        "op-003": {
+          "title": "W2 栈/激活事务与重入（F3/F7/F8）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-003"
+        },
+        "op-004": {
+          "title": "W3 UI/JS 启动顺序与统一关闭边界（F4/F5）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-004"
+        },
+        "op-005": {
+          "title": "W4 异步 exactly-once/会话取消/Streamable/TS 定时器（F2/F6/F9/F10）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-005"
+        },
+        "op-006": {
+          "title": "W5 编辑器扩展清理与 Mixin 生成健壮性（F11/F12）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-006"
+        },
+        "op-007": {
+          "title": "W6 TS 初始化契约与调试面板 FPS（F13/F14）",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "id": "op-007"
+        }
+      },
+      "workflow_mode": "fast",
+      "stats": {
+        "start_time": "2026-11-05T14:26:53.300Z",
+        "end_time": "2026-11-06T12:20:56.093Z",
+        "duration_ms": 78842793
+      },
+      "requirements": [
+        {
+          "id": "REQ-009",
+          "order": 0
+        },
+        {
+          "id": "REQ-010",
+          "order": 1
+        }
+      ],
+      "verification": {
+        "result": "pass",
+        "kind": "test",
+        "by": "feel",
+        "at": "2026-11-06T12:20:41.529Z",
+        "note": "F1–F14 全覆盖；REQ-010 已完成 review/verify；发布检查无未完成需求。",
+        "evidence": "Build.bat W1–W6 各波 Succeeded + 末次全量 Succeeded；tsc -p tsconfig.json exit 0；PIE 三次会话冒烟（GameStart→GameLoading→观澜台，生命周期配对无崩溃）；独立复审无 P1 且 8 项 P2/P3 已修复；记录见 docs/reviews/corui-fix-record-2026-11-05.md"
+      }
+    }
+  },
+  "reviews": [],
+  "log": [
+    {
+      "time": "2026-11-05T14:26:33.418Z",
+      "agent": "cli",
+      "action": "register_stage",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "deps": []
+      }
+    },
+    {
+      "time": "2026-11-05T14:26:53.297Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "plan_pending",
+        "to": "plan_review",
+        "session_id": "proc:2738f6b5"
+      }
+    },
+    {
+      "time": "2026-11-05T14:26:58.823Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "plan_review",
+        "to": "plan_passed",
+        "session_id": "proc:9eb952e6"
+      }
+    },
+    {
+      "time": "2026-11-05T14:27:05.393Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:eb7d371a"
+      }
+    },
+    {
+      "time": "2026-11-05T14:28:01.782Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-001"
+      }
+    },
+    {
+      "time": "2026-11-05T14:56:47.136Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-002"
+      }
+    },
+    {
+      "time": "2026-11-05T14:58:58.266Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-003"
+      }
+    },
+    {
+      "time": "2026-11-05T15:19:40.646Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-004"
+      }
+    },
+    {
+      "time": "2026-11-05T15:19:44.779Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-005"
+      }
+    },
+    {
+      "time": "2026-11-05T15:19:49.809Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-006"
+      }
+    },
+    {
+      "time": "2026-11-05T15:19:54.454Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "opId": "op-007"
+      }
+    },
+    {
+      "time": "2026-11-05T15:32:49.192Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "exec_running",
+        "to": "review_pending",
+        "session_id": "proc:2d54425b"
+      }
+    },
+    {
+      "time": "2026-11-05T15:32:57.094Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "review_pending",
+        "to": "review_passed",
+        "session_id": "proc:8edfb929"
+      }
+    },
+    {
+      "time": "2026-11-06T12:20:36.939Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "review_passed",
+        "to": "archiving",
+        "session_id": "proc:b2c6549a"
+      }
+    },
+    {
+      "time": "2026-11-06T12:20:56.086Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.1-stage-05",
+        "from": "archiving",
+        "to": "done",
+        "session_id": "proc:2e3e01db"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-009",
+      "title": "CORUI 插件只读审查（Codex gpt-6.1-sol）",
+      "status": "done",
+      "created_at": "2026-11-05T14:27:10.556Z",
+      "updated_at": "2026-11-05T14:34:46.607Z",
+      "target_version": "v1.6.1",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-009.md",
+      "owner": "Liuary",
+      "claimed_at": "2026-11-05T14:27:15.073Z",
+      "review": {
+        "result": "pass",
+        "by": "Codex gpt-6.1-sol",
+        "at": "2026-11-05T14:34:33.060Z",
+        "note": "独立只读审查：覆盖 CORUI/JsEnvManager/PuertsMixinGenerator 与 TS 桥接面；245 行报告，6 个 P1、7 个 P2、1 个 P3，无 P0；Top 5 风险与 REQ 候选已列出。",
+        "independent": true
+      },
+      "verification": {
+        "result": "pass",
+        "kind": "manual",
+        "by": "Feel",
+        "at": "2026-11-05T14:34:39.542Z",
+        "note": "报告已落盘，含范围/方法、总体结论、带 file:line 的分级发现、架构/生命周期/异步/JS 桥接专项、Top 5 风险与后续 REQ 候选、不确定项。",
+        "evidence": "docs/reviews/corui-review-2026-11-05.md（21 KB / 245 行）"
+      }
+    },
+    {
+      "id": "REQ-010",
+      "title": "按审查修复计划处理 CORUI F1–F14（所有权/重入/生命周期/异步/编辑器/TS）",
+      "status": "done",
+      "created_at": "2026-11-05T14:38:27.120Z",
+      "updated_at": "2026-11-05T15:32:43.784Z",
+      "target_version": "v1.6.1",
+      "priority": "P1",
+      "workflow_mode": "fast",
+      "body_path": ".openfeel/requirements/REQ-010.md",
+      "owner": "Liuary",
+      "claimed_at": "2026-11-05T14:38:31.602Z",
+      "verification": {
+        "result": "pass",
+        "kind": "test",
+        "by": "feel",
+        "at": "2026-11-05T15:25:09.583Z",
+        "note": "W1–W6 六波独立构建 Succeeded，末次全量构建 Succeeded；tsc -p tsconfig.json exit 0；PIE（PlayMode_InViewPort）两次会话冒烟通过：GameStart→GameLoading→观澜台链路正常，OnScriptInit 先于 Open，窗口名回退为 CDO 名，Push 与 OnClose/Destruct 日志配对、无重复释放、无崩溃；StopPIE 关闭边界清理干净。",
+        "evidence": "Build.bat CultivationOpenRealmEditor Win64 Development (W1–W6 each Succeeded); node .../tsc.js -p tsconfig.json (exit 0); MCP StartPIE + LogsToolset 会话日志（docs/reviews/corui-fix-record-2026-11-05.md §0）"
+      },
+      "review": {
+        "result": "pass",
+        "by": "independent-review-agent",
+        "at": "2026-11-05T15:32:39.156Z",
+        "note": "独立只读复审整份 diff（Codex 容量不可用，改独立 agent）：无 P1；未发现双 NativeOpen 或零/双次终止回调；容器重入、会话代际、GC 所有权、扩展清理判定成立。提出 10 项（3×P2/7×P3），已修复 8 项代码缺陷（同步完成时在途残留、GameLoading 关闭顺序、回调内重复 Push 的去重弹出、状态返回值、final teardown 回调抑制、Streamable 取消后补发终态与部分无效列表、Mixin 提前返回、登记表失效条目），其余 2 项为文档化（PushUI 成功语义）与提交卫生提醒。",
+        "independent": true
+      }
+    }
+  ],
+  "counts": {
+    "stages": 1,
+    "reviews": 0,
+    "log": 15,
+    "requirements": 2
+  },
+  "schemaVersion": 1,
+  "archived_at": "2026-11-06T12:56:51.573Z"
+}

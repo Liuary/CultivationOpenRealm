@@ -57,3 +57,10 @@ Plugins/Puerts/Source/*/obj/
 Content/JavaScript
 # 只忽略这个文件夹下的.js文件
 Content/JavaScript/**/*.js
+
+# Python cache
+__pycache__/
+*.pyc
+
+# 调试截图/审查日志产物
+Output/
