@@ -3,8 +3,13 @@
 > **项目名称**: CultivationOpenRealm（修真开放世界）  
 > **插件名称**: CORUI（Cultivation Open Realm UI）  
 > **作者**: Liuary  
-> **核心依赖**: UE5 + Puerts (TypeScript/JavaScript 绑定)  
-> **文档日期**: 2026-04-28
+> **核心依赖**: UE 5.8 + Puerts (TypeScript/JavaScript 绑定)  
+> **文档日期**: 2026-04-28 初版（基于 v1.0）  
+> **最近更新**: 2026-11-15（v1.6.2 复核）
+
+> **阅读提示**：第 3~6 章为 2026-04 的初版分析，模块划分仍成立；
+> 第 7 章「不足之处」是当时的快照，其中部分条目已在 v1.1 ~ v1.6.2 修复。
+> 请一律对照文末 **[第 8 章：演进与现状](#8-v11--v162-演进与现状2026-11-复核)** 阅读。
 
 ---
 
@@ -257,37 +262,38 @@ DrawCall 计算遍历控件树，根据资源切换、裁剪状态、Canvas ZOrd
 TypeScript 源码位于 [`TypeScript/`](TypeScript/)，是游戏逻辑的主要开发语言。
 
 ```
-TypeScript/
-├── tsconfig.json             # TS 编译配置
-├── CorStart.ts               # 入口启动模块
+TypeScript/                        # 顶层 tsconfig.json 与入口
+├── CorStart.ts               # 入口启动模块（Puerts 启动入口）
 ├── PuertsImportList.ts       # Mixin 文件导入列表（自动生成）
 ├── Config/
-│   └── PreLoadDataTable.ts   # 预加载数据表配置（空文件）
+│   └── PreLoadDataTable.ts   # 预加载数据表配置
 ├── Game/
+│   ├── Events/
+│   │   └── GameEvents.ts     # 事件契约（v1.6.2 新增，配合 Utils/Event/EventBus）
 │   └── UI/
-│       ├── GameLoading/
-│       │   └── UI_GameLoading.ts    # 加载界面逻辑
-│       └── GameStart/
-│           ├── UI_GameStart.ts            # 开始界面逻辑
-│           └── UI_GameStartSingleType.ts  # 单例类型定义
+│       ├── GameLoading/UI_GameLoading.ts
+│       ├── GameStart/UI_GameStart.ts、UI_GameStartSingleType.ts
+│       ├── ViewModel/ViewModelBase.ts   # ViewModel 基类（v1.6.2）
+│       └── Test/                        # 观澜 UI 测试套件 Mixin
+│           UI_TestHub.ts、UI_TestData.ts、UI_TestStack.ts、UI_TestToast.ts 等
 ├── Manager/
 │   ├── UIManager.ts           # UI 管理器（TS 侧，封装 PushUI/PopUI）
-│   ├── GameManager.ts         # 游戏主管理器
-│   ├── GameManagerBase.ts     # 管理器基类
-│   ├── GameLoadingManager.ts  # 加载流程管理器
-│   ├── GameStartManager.ts    # 开始流程管理器
-│   ├── DataManager.ts         # 数据管理器
-│   └── TimeManager.ts         # 时间管理器
-├── Utils/
-│   ├── CommonUtil.ts
-│   ├── TypeUitls.ts
-│   ├── Log/Log.ts             # 日志工具
-│   ├── Log/LogType.ts
-│   ├── Mixin/MixinUtils.ts    # Mixin 工具
-│   └── UISingle/UISingle.ts       # UI 单例模式封装
-│       └── UISingleType.ts
-└── Typing/                    # TypeScript 类型声明
+│   ├── GameManager.ts / GameManagerBase.ts
+│   ├── GameLoadingManager.ts / GameStartManager.ts
+│   ├── DataManager.ts         # 数据表缓存 + 事件广播（v1.6.2）
+│   ├── TestUIManager.ts       # 测试套件入口（AutoDemo 开关）
+│   └── TimeManager.ts
+└── Utils/
+    ├── CommonUtil.ts、TypeUitls.ts
+    ├── Event/EventBus.ts      # 类型安全事件总线（v1.6.2）
+    ├── Log/Log.ts、LogType.ts
+    ├── Mixin/MixinUtils.ts
+    └── UISingle/UISingle.ts、UISingleType.ts
+
+Typing/                      # 顶层类型声明（cpp / ffi / puerts / ue）
 ```
+
+> 初版此处把 `Typing/` 画在 `TypeScript/` 内部；实际它是与 `TypeScript/` 平级的独立目录。
 
 ### 启动流程
 
@@ -494,4 +500,71 @@ PopUI(name, layer, bPopSelf)
 
 ---
 
-*本文档基于项目代码分析生成，涵盖了 CORUI 插件的主要结构、设计特点和已知问题。建议开发团队根据上述不足逐步优化。*
+## 8. v1.1 ~ v1.6.2 演进与现状（2026-11 复核）
+
+### 8.1 版本历程
+
+| 版本 | 主题 |
+|------|------|
+| v1.1.0 | 升级 Puerts 到 Unreal_v1.0.9；修复控件 `RemoveFromParent` 不析构 |
+| v1.2.0 | 整体迁移到 UE 5.8（目标设置、CORUI 兼容、编译与运行验证） |
+| v1.3.0 | 恢复 Puerts ThirdParty V8 9.4 运行库（V8 库不入库，见 README） |
+| v1.4.0 | 修复 `UI_GameStart` 的 null 赋值类型错误，补充 TS 编译说明 |
+| v1.6.2 | 事件总线、ViewModel 层、数据表管线、Travel 实测、F1 所有权断言、DrawCall 面板修正（6 条需求全部归档） |
+
+### 8.2 v1.6.2 新增能力
+
+| 能力 | 位置 | 说明 |
+|------|------|------|
+| 事件总线 | `TypeScript/Utils/Event/EventBus.ts` + `Game/Events/GameEvents.ts` | 类型安全事件契约；Emit 快照、异常隔离、Once 去重、生命周期解除；`data:table-cached` / `ui:stopped` / `toast:shown` 已接线 |
+| ViewModel 层 | `TypeScript/Game/UI/ViewModel/ViewModelBase.ts` | patch 合并 + 变更通知；首帧只渲染一次；显式 `undefined` 不清空字段 |
+| 数据表管线 | CORUI C++（JSON/CSV 导入导出、`LoadTableByPath`）+ `Manager/DataManager.ts` | 原子导入、严格字段校验、唯一临时表；TS 侧缓存并广播事件 |
+| 调试命令 | `Plugins/CORUI/Source/CORUI` | `CORUI.Travel`（同 GameInstance 换图）、`CORUI.VerifyOwnership`（仅非 Shipping，输出 `RESULT=PASS/FAIL/SKIP`） |
+| DrawCall 面板 | `PuertsMixinGenerator` | 分类计数（Image/Text/Border/Box/Effect）、元素/强制断批/扫描/未识别统计、批次键补 layer 与字重、自愈重挂、签名节流、`CORUI.DrawCallOverlay` 开关 |
+| 观澜测试套件 | `TypeScript/Game/UI/Test/*` + `Manager/TestUIManager.ts` | `TestUIManager.AutoDemo = true` 打开 `UI_TestHub` 自动跑自检 |
+
+### 8.3 第 7 章问题清单现状
+
+| 原问题（第 7 章） | 现状 | 说明 |
+|------|------|------|
+| 控件子类为空（CORButton 等） | 仍存在 | 未处理 |
+| Puerts 导出被注释 | 仍存在 | `CORUIManager.cpp` 末尾注册仍注释；TS 走事件与 `UFUNCTION` 桥接 |
+| 重复导出注册 | 未复核 | — |
+| JsEnvManager.cpp 为空 | 仍存在 | 模块仅做启动/关闭 |
+| UI 管理器未直接导出到 TS | 仍存在 | 同上 |
+| 所有 Manager 均为 GameInstanceSubsystem | 保持设计 | 暂未调整 |
+| 线程锁适用性存疑 | 未复核 | — |
+| 缺少 UI 动画系统 | 仍缺 | 未集成补间方案 |
+| 异步加载无错误恢复 | 仍缺 | 复审记录中列为后续 |
+| StreamableManager 无卸载跟踪 | 未复核 | — |
+| PopUI 悬挂弱指针 | 未复核 | — |
+| **DrawCall 预估值精度有限** | **已修（v1.6.2）** | 分类/断批模型补全，面板明确标注「预估，非实测」；见 REQ-016 |
+| Mixin 生成逻辑硬编码 | 未复核 | — |
+| 配置遗留重定向 | 未复核 | — |
+| **缺少 TypeScript 类型声明** | **已解决** | 顶层 `Typing/`（cpp / ffi / puerts / ue） |
+| Mixin 生成重复检测 | 仍存在 | 仍仅文件不存在时生成 |
+| **没有单元测试/自动化测试** | **部分** | 观澜 AutoDemo 运行期自检（非 UE Automation，需手工触发） |
+
+### 8.4 架构补充（v1.6.2 之后）
+
+- **UI 会话拆建**：同一 GameInstance 内换图时，UI 会话成对拆建、JS 环境保持单实例、数据表在新世界重新缓存（`CORUI.Travel` 实测）
+- **F1 所有权**：`RootCanvas` / 层容器 / 池实例改为 `UPROPERTY` 持有；`CORUI.VerifyOwnership` 用不可达探针自证 GC 有效后断言存活（判定 6 项 + 2 项 INFO）
+- **数据流新增一层**：C++ → TS 事件、TS → TS 事件总线，UI 之间不再直接互相调用
+- **流程治理**：`.openfeel/` 承载需求、阶段、审查（REV）与版本归档；v1.6.2 已归档
+
+### 8.5 构建与验证入口
+
+```bash
+# 编译
+"C:\Program Files\Epic Games\UE_5.8\Engine\Build\BatchFiles\Build.bat" \
+  CultivationOpenRealmEditor Win64 Development -Project="...\CultivationOpenRealm.uproject" -WaitMutex
+
+# 运行期验证（PIE 中执行）
+CORUI.VerifyOwnership     # 所有权断言，看 [CORUI][Owner] RESULT=
+CORUI.Travel /Game/Map/TestMap   # UI 会话拆建验证
+```
+
+---
+
+*本文档 2026-04-28 初版基于项目代码分析生成；2026-11-15 补充第 8 章并复核第 7 章现状。
+未复核项表示本轮没有重新验证，不代表问题已消失。*
