@@ -786,6 +786,24 @@ UCORCanvasContainer* UCORUIManager::GetLayer(EUILayerType Layer)
 	return LayerPtr->Get();
 }
 
+// ---------------------------------------------------------------------------
+// 已废弃：早期的手写 Puerts 导出（保留仅作历史参考，**请勿取消注释**）
+//
+// 现状：UCORUIManager 不需要手动导出。Puerts 会按 UCLASS + UFUNCTION 自动生成绑定与
+// TypeScript 声明（见 Typing/ue/ue.d.ts 的 `class CORUIManager`）。TS 侧通过
+// `UE.CORUIManager` 直接调用 PushUI / PopUI / GetLayer / GetLayerTypes / GetLayerZOrder /
+// IsUIInitialized，委托 OnUIManagerInit / OnUIManagerDeinit 同样由自动绑定提供
+// （UIManager.ts 里的 CppSubSystem.PushUI(...) 走的就是这条路径）。
+//
+// 下面这段为什么不能直接用：
+//   1) 类型名已过期：FOnCORUIStateNotify 现为 FOnCORUIManagerStateNotify（CORUIManager.h:12），
+//      取消注释会编译失败；
+//   2) 自动绑定已覆盖同名函数，再 DefineClass 属于重复注册；
+//   3) 与 UFUNCTION 自动导出重复维护，容易再次漂移。
+//
+// 若未来确实要导出 UFUNCTION 覆盖不到的类型（例如纯 C++ 结构），请按现有写法加在
+// Plugins/CORUI/Source/CORUI/Private/Core/AutoRegister/AutoRegister.cpp，不要恢复本段。
+// ---------------------------------------------------------------------------
 //
 // ///////// puerts导出
 // UsingUClass(UObject)
