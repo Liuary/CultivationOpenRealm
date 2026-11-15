@@ -111,7 +111,7 @@
 
 - Unreal Engine 5.8
 - **V8 预编译库 9.4.146.24**（见上方"首次克隆必读"）
-- Node.js（TypeScript 编译）
+- Node.js 18+ 与 npm（TypeScript 编译）
 - Git LFS（`Content/` 下的 `.uasset` / `.umap`）
 
 ### 启动步骤
@@ -120,8 +120,15 @@
 2. 按上文补下 V8 库到 `Plugins/Puerts/ThirdParty/`
 3. 生成 UE 项目文件（右键 `.uproject` → Generate Visual Studio project files）
 4. 编译 Editor Target（或直接打开 `.uproject` 让引擎编译）
-5. TypeScript 源码在 `TypeScript/`，按 `tsconfig.json` 编译输出到 `Content/JavaScript/`
-6. 打开编辑器运行；也可用 `Plugins/CORUI/Tools/watch-ts/` 做监听编译
+5. 安装依赖并编译 TypeScript：
+
+   ```bash
+   npm install
+   npm run build      # 或 npm run watch 监听编译；也可 npm run typecheck 只做类型检查
+   ```
+
+   源码在 `TypeScript/`，产物输出到 `Content/JavaScript/`
+6. 打开编辑器运行；也可用 `Plugins/CORUI/Tools/watch-ts/` 的批处理做监听编译
 
 ### 创建新 UI
 

@@ -62,5 +62,9 @@ Content/JavaScript/**/*.js
 __pycache__/
 *.pyc
 
+# Node / TypeScript
+node_modules/
+npm-debug.log*
+
 # 调试截图/审查日志产物
 Output/

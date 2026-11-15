@@ -1,0 +1,14 @@
+{
+  "name": "cultivation-open-realm",
+  "version": "1.6.2",
+  "private": true,
+  "description": "CultivationOpenRealm — CORUI 游戏 UI 框架（UE 5.8 + Puerts/TypeScript）",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
