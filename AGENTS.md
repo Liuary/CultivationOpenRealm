@@ -207,6 +207,7 @@ VM.Dispose();
 
 - [README.md](./README.md)：项目概况、V8 库下载、构建启动
 - [docs/ai/framework-usage.md](./docs/ai/framework-usage.md)：框架 API 详解、生命周期、排障
+- [docs/ai/port-to-new-project.md](./docs/ai/port-to-new-project.md)：**把框架移植到别的项目**（含可直接发给 AI 的任务书）
 - [开发文档_CORUI插件分析.md](./开发文档_CORUI插件分析.md)：C++ 内部结构分析、问题清单与现状
 - `docs/design/`：UI 设计稿；`docs/reviews/`：评审记录；`docs/issues/`：问题清单
 - `.openfeel/`：需求/阶段/审查/归档（OpenFeel 流程治理）

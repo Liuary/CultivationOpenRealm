@@ -167,6 +167,7 @@
 
 - [AGENTS.md](./AGENTS.md) — **给 AI 编码助手的入口说明**（速查、配方、陷阱、验证）
 - [docs/ai/framework-usage.md](./docs/ai/framework-usage.md) — 框架使用手册（C++/TS API、生命周期、排障）
+- [docs/ai/port-to-new-project.md](./docs/ai/port-to-new-project.md) — 移植到新项目的清单与 AI 任务书
 - [CORUI 插件分析（2026-04 初版，2026-11 更新）](./开发文档_CORUI插件分析.md)
 - `docs/design/` — UI 设计稿与截图（[ui-test-suite.md](./docs/design/ui-test-suite.md)、崩溃分析）
 - `docs/reviews/` — 代码评审与修复记录（如 [corui-review-2026-11-05.md](./docs/reviews/corui-review-2026-11-05.md)）
