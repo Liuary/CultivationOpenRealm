@@ -518,7 +518,7 @@ PopUI(name, layer, bPopSelf)
 |------|------|------|
 | 事件总线 | `TypeScript/Utils/Event/EventBus.ts` + `Game/Events/GameEvents.ts` | 类型安全事件契约；Emit 快照、异常隔离、Once 去重、生命周期解除；`data:table-cached` / `ui:stopped` / `toast:shown` 已接线 |
 | ViewModel 层 | `TypeScript/Game/UI/ViewModel/ViewModelBase.ts` | patch 合并 + 变更通知；首帧只渲染一次；显式 `undefined` 不清空字段 |
-| 数据表管线 | CORUI C++（JSON/CSV 导入导出、`LoadTableByPath`）+ `Manager/DataManager.ts` | 原子导入、严格字段校验、唯一临时表；TS 侧缓存并广播事件 |
+| 数据表管线 | CORUI C++（JSON/CSV 导入导出、`LoadTableByPath`）+ `Manager/DataManager.ts` | 原子导入、严格字段校验、唯一临时表；TS 侧缓存为「行名 → 行数据」映射，提供 `GetRow` / `GetAllRows` / `GetRowNames`，缓存后广播 `data:table-cached` |
 | 调试命令 | `Plugins/CORUI/Source/CORUI` | `CORUI.Travel`（同 GameInstance 换图）、`CORUI.VerifyOwnership`（仅非 Shipping，输出 `RESULT=PASS/FAIL/SKIP`） |
 | DrawCall 面板 | `PuertsMixinGenerator` | 分类计数（Image/Text/Border/Box/Effect）、元素/强制断批/扫描/未识别统计、批次键补 layer 与字重、自愈重挂、签名节流、`CORUI.DrawCallOverlay` 开关 |
 | 观澜测试套件 | `TypeScript/Game/UI/Test/*` + `Manager/TestUIManager.ts` | `TestUIManager.AutoDemo = true` 打开 `UI_TestHub` 自动跑自检 |
@@ -528,21 +528,21 @@ PopUI(name, layer, bPopSelf)
 | 原问题（第 7 章） | 现状 | 说明 |
 |------|------|------|
 | 控件子类为空（CORButton 等） | 仍存在 | 未处理 |
-| Puerts 导出被注释 | 仍存在 | `CORUIManager.cpp` 末尾注册仍注释；TS 走事件与 `UFUNCTION` 桥接 |
-| 重复导出注册 | 未复核 | — |
+| Puerts 导出被注释 | 部分恢复 | `UCORUIManager` 注册仍注释（`CORUIManager.cpp:801-804`）；但 `AutoRegister.cpp` 已活跃导出 `CORSoftObjectPath`、`WeakObjectWrapper`、`UCORStreamableManager` |
+| 重复导出注册 | 仍存在（噪音） | `CORSoftObjectPath.cpp:6-26` 的旧注册注释未清理；活跃注册在 `AutoRegister.cpp:28-39` |
 | JsEnvManager.cpp 为空 | 仍存在 | 模块仅做启动/关闭 |
 | UI 管理器未直接导出到 TS | 仍存在 | 同上 |
 | 所有 Manager 均为 GameInstanceSubsystem | 保持设计 | 暂未调整 |
-| 线程锁适用性存疑 | 未复核 | — |
+| 线程锁适用性存疑 | 仍存在（风险已降低） | `CORUIManager` / `CORCanvasContainer` 共 12 处 `FScopeLock`；已用 `DispatchDepth` 在锁外派发生命周期回调，减少重入死锁，但锁本身未移除 |
 | 缺少 UI 动画系统 | 仍缺 | 未集成补间方案 |
 | 异步加载无错误恢复 | 仍缺 | 复审记录中列为后续 |
-| StreamableManager 无卸载跟踪 | 未复核 | — |
-| PopUI 悬挂弱指针 | 未复核 | — |
+| StreamableManager 无卸载跟踪 | 仍存在 | `UCORStreamableManager::Handles` 只有 `int32 → FStreamableHandle`，未记录资源路径，无法按路径批量释放 |
+| PopUI 悬挂弱指针 | **已修复** | `PopUI` 改为「锁内快照 + `DetachWindow`，锁外 `ReleaseWindows`」；`DetachWindow` 有 `IsValid` 与栈/映射双重检查（`CORCanvasContainer.cpp:101-260`） |
 | **DrawCall 预估值精度有限** | **已修（v1.6.2）** | 分类/断批模型补全，面板明确标注「预估，非实测」；见 REQ-016 |
-| Mixin 生成逻辑硬编码 | 未复核 | — |
-| 配置遗留重定向 | 未复核 | — |
+| Mixin 生成逻辑硬编码 | 部分 | 已改用 `FPaths` 与配置项 `PuertsMixinPath`（默认 `TypeScript`），但仍把 `/Game/...` 包路径直接当目录用，依赖工程目录约定 |
+| 配置遗留重定向 | 仍存在（有意保留） | `DefaultCORUI.ini` 仍有一条 `LayerConfig → UILayerConfig` 结构体重定向，用于兼容旧资产 |
 | **缺少 TypeScript 类型声明** | **已解决** | 顶层 `Typing/`（cpp / ffi / puerts / ue） |
-| Mixin 生成重复检测 | 仍存在 | 仍仅文件不存在时生成 |
+| Mixin 生成重复检测 | 仍存在 | 仍只在 `!FPaths::FileExists()` 时生成，蓝图改动后不会更新已有文件（`PuertsMixinGenerator.cpp:248`） |
 | **没有单元测试/自动化测试** | **部分** | 观澜 AutoDemo 运行期自检（非 UE Automation，需手工触发） |
 
 ### 8.4 架构补充（v1.6.2 之后）
@@ -562,9 +562,37 @@ PopUI(name, layer, bPopSelf)
 # 运行期验证（PIE 中执行）
 CORUI.VerifyOwnership     # 所有权断言，看 [CORUI][Owner] RESULT=
 CORUI.Travel /Game/Map/TestMap   # UI 会话拆建验证
+
+# TypeScript 编译（需全局 tsc 或 npx）
+npx -p typescript@5.6.3 tsc -p tsconfig.json
 ```
+
+### 8.6 配置表（数据表）能力现状
+
+**C++ 侧**（`UCORDataLibrary`，蓝图/Puerts 均可调用）：
+
+| API | 用途 |
+|-----|------|
+| `GetTableRowAsJson` / `GetEntireTableAsJson` | 单行 / 整表转 JSON |
+| `ImportTableFromJson` / `ImportTableFromCsv` | 导入（两阶段校验 + 一次性替换，失败回滚） |
+| `ExportTableToJson` / `ExportTableToCsv` | 导出（CSV 仅编辑器有效） |
+| `CreateTableFromTemplate` | 以模板 RowStruct 建 transient 表，供往返校验 |
+
+**TypeScript 侧**（`DataManager`）：
+
+| API | 用途 |
+|-----|------|
+| `LoadTableByPath(path, key?)` | 按资源路径加载 DataTable 并缓存，缓存后广播 `data:table-cached` |
+| `CacheTable(key, table)` | 直接缓存已加载的表 |
+| `GetRow(key, rowName)` | 按行名取单行 |
+| `GetAllRows(key)` | 取全部行（顺序随表遍历） |
+| `GetRowNames(key)` | 取行名列表 |
+
+> **2026-11-15 修复**：`CacheTable` 原先用 `for...in` 把表压成数组（丢掉行名），
+> 导致 `GetRow` 按行名永远返回 `undefined`。现改为保留 `行名 → 行数据` 映射，并补 `GetRowNames`。
+> 验证：`tsc` 编译通过（exit 0）；PIE 日志 `data:table-cached key=CacheKey_DT_GameStart rows=2`，`GetAllRows` 消费方正常。
 
 ---
 
-*本文档 2026-04-28 初版基于项目代码分析生成；2026-11-15 补充第 8 章并复核第 7 章现状。
-未复核项表示本轮没有重新验证，不代表问题已消失。*
+*本文档 2026-04-28 初版基于项目代码分析生成；2026-11-15 补充第 8 章并逐条复核第 7 章现状。
+表格中「未复核」已全部清零，结论均来自当轮代码核对；「部分」表示只解决了一部分。*
