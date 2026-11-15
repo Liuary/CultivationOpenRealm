@@ -2,8 +2,8 @@
   "meta": {
     "version": "1.0",
     "project": "OpenFeel",
-    "updated": "2026-11-15T13:51:04.118Z",
-    "revision": 255,
+    "updated": "2026-11-15T14:02:24.358Z",
+    "revision": 257,
     "archived_versions": [
       "v1.1.0",
       "v1.2.0",
@@ -30,7 +30,27 @@
       "phase": "exec_running",
       "status": "planned",
       "deps": [],
-      "ops": {},
+      "ops": {
+        "op-001": {
+          "title": "V8 预编译库不入库：README 说明 + 历史清理 + 推送到远端",
+          "state": "done",
+          "assignee": "openfeel-executor",
+          "attempts": 1,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 1,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          },
+          "attempted_at": "2026-11-15T14:02:24.327Z",
+          "completed_at": "2026-11-15T14:02:24.327Z"
+        }
+      },
       "workflow_mode": "fast",
       "stats": {
         "start_time": "2026-11-15T13:50:33.132Z",
@@ -1461,6 +1481,24 @@
         "from": "plan_passed",
         "to": "exec_running",
         "session_id": "proc:0418bfd1"
+      }
+    },
+    {
+      "time": "2026-11-15T14:02:10.212Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.3-stage-07",
+        "opId": "op-001"
+      }
+    },
+    {
+      "time": "2026-11-15T14:02:24.327Z",
+      "agent": "openfeel-executor",
+      "action": "attempt_pass",
+      "detail": {
+        "opId": "v1.6.3-stage-07.op-001",
+        "attempts": 1
       }
     }
   ],

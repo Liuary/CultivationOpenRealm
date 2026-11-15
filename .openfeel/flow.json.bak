@@ -2,8 +2,8 @@
   "meta": {
     "version": "1.0",
     "project": "OpenFeel",
-    "updated": "2026-11-15T13:50:55.928Z",
-    "revision": 254,
+    "updated": "2026-11-15T14:02:10.212Z",
+    "revision": 256,
     "archived_versions": [
       "v1.1.0",
       "v1.2.0",
@@ -27,10 +27,28 @@
   "stages": {
     "v1.6.3-stage-07": {
       "name": "v1.6.3-stage-07",
-      "phase": "plan_passed",
+      "phase": "exec_running",
       "status": "planned",
       "deps": [],
-      "ops": {},
+      "ops": {
+        "op-001": {
+          "title": "V8 预编译库不入库：README 说明 + 历史清理 + 推送到远端",
+          "state": "pending",
+          "assignee": "openfeel-executor",
+          "attempts": 0,
+          "max_attempts": 3,
+          "checkpoints": {
+            "plan": "pending",
+            "scheme": "pending",
+            "exec": {
+              "attempts": 0,
+              "self": "pending"
+            },
+            "review": "pending",
+            "test": "pending"
+          }
+        }
+      },
       "workflow_mode": "fast",
       "stats": {
         "start_time": "2026-11-15T13:50:33.132Z",
@@ -1450,6 +1468,26 @@
         "from": "plan_review",
         "to": "plan_passed",
         "session_id": "proc:000600ed"
+      }
+    },
+    {
+      "time": "2026-11-15T13:51:04.112Z",
+      "agent": "cli",
+      "action": "advance_stage_phase",
+      "detail": {
+        "stageName": "v1.6.3-stage-07",
+        "from": "plan_passed",
+        "to": "exec_running",
+        "session_id": "proc:0418bfd1"
+      }
+    },
+    {
+      "time": "2026-11-15T14:02:10.212Z",
+      "agent": "cli",
+      "action": "register_op",
+      "detail": {
+        "stageName": "v1.6.3-stage-07",
+        "opId": "op-001"
       }
     }
   ],
