@@ -17,7 +17,7 @@ class DataManager extends GameManagerBase{
         return this._Instance;
     }
     
-    /** 缓存数据 */
+    /** 缓存数据：CacheKey -> (行名 -> 行数据)，保留行名以便 GetRow 按名取值 */
     private Cache: Map<string, Record<string, any>> = new Map<string, Record<string, any>>();
     
     /** 通过资源路径加载数据表并缓存（成功返回 true） */
@@ -64,20 +64,15 @@ class DataManager extends GameManagerBase{
     /** 将已经加载的表缓存到内存中 */
     public CacheTable(CacheKey: string, Table: UE.DataTable): void {
         const JsonStr = UE.CORDataLibrary.GetEntireTableAsJson(Table);
-        // Log.Log(LogType.UI, `CacheTable: ${CacheKey}, JsonStr:${JsonStr}`);
-        let JsonRecord = JSON.parse(JsonStr);
-        // Log.Log(LogType.UI, `CacheTable: ${CacheKey}, JsonRecord length:${JsonRecord.length}`);
-        let RowList: any[] = [];
-        for (let Key in JsonRecord) {
-            RowList.push(JsonRecord[Key]);
-            // Log.Log(LogType.UI, `CacheTable: ${Key}, ${JsonRecord[Key]}`);
-        }
-        this.Cache.set(CacheKey, RowList);
+        // 形态：{ "RowName": { "Field": value } }；必须保留行名-行数据的映射，
+        // 之前压成数组会丢掉行名，导致 GetRow 按行名永远取不到。
+        const JsonRecord: Record<string, any> = JSON.parse(JsonStr);
+        this.Cache.set(CacheKey, JsonRecord);
 
-        GameEvents.Emit('data:table-cached', { key: CacheKey, rows: RowList.length });
+        GameEvents.Emit('data:table-cached', { key: CacheKey, rows: Object.keys(JsonRecord).length });
     }
-    
-    /** 从缓存中获取数据 */
+
+    /** 从缓存中获取数据（按行名） */
     public GetRow<T>(CacheKey: string, RowName: string): PureData<T> | undefined {
         const TableRecord = this.Cache.get(CacheKey);
         if (TableRecord && TableRecord[RowName]) {
@@ -86,15 +81,16 @@ class DataManager extends GameManagerBase{
         return undefined;
     }
 
-    /** 从缓存中获取所有数据 */
+    /** 从缓存中获取所有数据（行顺序不保证，与 UE DataTable 的遍历顺序一致） */
     public GetAllRows<T>(CacheKey: string): PureData<T>[] {
-
         const TableRecord = this.Cache.get(CacheKey);
-        if (TableRecord) {
-            return TableRecord as PureData<T>[];
-        }
-        return [];
+        return TableRecord ? (Object.values(TableRecord) as PureData<T>[]) : [];
+    }
 
+    /** 获取某张表的行名列表 */
+    public GetRowNames(CacheKey: string): string[] {
+        const TableRecord = this.Cache.get(CacheKey);
+        return TableRecord ? Object.keys(TableRecord) : [];
     }
     
 }
